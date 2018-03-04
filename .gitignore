@@ -101,3 +101,7 @@ node_modules/
 assets/
 
 db.sqlite3
+
+# security
+database.py
+secret.py

@@ -1,0 +1,33 @@
+Metadata-Version: 1.1
+Name: django-mongoengine
+Version: 0.3
+Summary: Django support for MongoDB via MongoEngine
+Home-page: https://github.com/mongoengine/django-mongoengine
+Author: Ross Lawley
+Author-email: ross.lawley@gmail.com
+License: BSD
+Download-URL: https://github.com/mongoengine/django-mongoengine/tarball/master
+Description-Content-Type: UNKNOWN
+Description: 
+        Django-MongoEngine
+        ------------------
+        
+        Django support for MongoDB using MongoEngine.
+        
+        Links
+        `````
+        
+        * `development version
+          <https://github.com/MongoEngine/django-mongoengine/raw/master#egg=Django-MongoEngine-dev>`_
+        
+        
+Platform: any
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Framework :: Django
