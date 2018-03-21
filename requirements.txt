@@ -1,14 +1,10 @@
 dataclasses==0.4
 Django==2.0.2
-django-mongoengine==0.3
 django-split-settings==0.3.0
 djangorestframework==3.7.7
 djangorestframework-jwt==1.11.0
 djangotoolbox==1.8.0
-djongo==1.2.20
-mongoengine==0.15.0
 PyJWT==1.5.3
-pymongo==3.6.0
 pytz==2018.3
 six==1.11.0
 sqlparse==0.2.4
