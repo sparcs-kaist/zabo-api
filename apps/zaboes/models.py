@@ -4,6 +4,7 @@ from django.apps import apps as django_apps
 from django.conf import settings
 from django.db import models
 from django.db import models
+from apps.users.models import ZaboUser
 
 class Zabo(models.Model):
     CATEGORY = (
@@ -24,7 +25,9 @@ class Zabo(models.Model):
         ('Z', 'Paid by zabo'),
         ('A', 'Payment on account')
     )
-    #author =
+    founder =  models.ForeignKey(
+        'users.ZaboUser', on_delete=models.CASCADE,
+    )
     poster = models.FileField(upload_to='posters/%Y/%m/%d/')
     location = models.CharField(max_length=50)
     content = models.TextField
@@ -43,6 +46,8 @@ class Zabo(models.Model):
     deadline = models.DateTimeField
     is_deleted = models.BooleanField(default = False)
     is_validated = models.BooleanField(default = False)
+    is_published = models.BooleanField(default = False)
+
 
 
 class Timeslot(models.Model):
@@ -80,3 +85,14 @@ class Recomment(models.Model):
     is_deleted = models.BooleanField(default = False)
     is_blocked = models.BooleanField(default = False)
 
+class Participate(models.Model):
+    zabo = models.ForeignKey(
+        'Zabo',
+        on_delete=models.CASCADE,
+    )
+    participants = models.OneToOneField(
+        'users.ZaboUser',
+        on_delete= models.CASCADE,
+    )
+    is_paid = models.BooleanField(default = False)
+    is_approved = models.BooleanField(default = False)
