@@ -1,8 +1,14 @@
 from django.apps import apps as django_apps
-from django.conf import base_settings
 from rest_framework import serializers
 
-from apps.users.models import User
+from apps.users.models import ZaboUser
 
-User = django_apps.get_model(
-    settings.AUTH_USER_MODEL, require_ready=False)
+class ZabouserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ZaboUser
+        fileds = '__all__'
+        read_only_fields = (
+            'joined_date'
+        ) #auto_now_add나 auto_now가 true이면 read_only_fields여야 함.
+
+

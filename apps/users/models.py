@@ -22,11 +22,17 @@ class ZaboUserManager(BaseUserManager):
         return self._create_user(email, password, True, True, is_active=True)
 
 
+#Django expects your custom user model to meet some minimum requirements. usernamefiled 정의해야함.
 
-class ZaboUser(AbstractBaseUser):
-    email = models.EmailField(_('email address'), blank=True, unique=True)
-    first_name = models.CharField(_('first name'), max_length=30, blank=True)
-    last_name = models.CharField(_('last name'), max_length=30, blank=True)
+class ZaboUser(AbstractBaseUser): #이메일 인증을 하려면 abstractbaseuser여야함.
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+    objects = ZaboUserManager
+
+    email = models.EmailField(blank=True, unique=True)
+    first_name = models.CharField( max_length=30, blank=True)
+    last_name = models.CharField(max_length=30, blank=True)
     is_active = models.BooleanField(default = False)
     is_superuser = models.BooleanField(default = False)
     is_deleted = models.BooleanField(default = False)

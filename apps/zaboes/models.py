@@ -3,7 +3,6 @@ import uuid
 from django.apps import apps as django_apps
 from django.conf import settings
 from django.db import models
-from django.db import models
 from apps.users.models import ZaboUser
 
 class Zabo(models.Model):
@@ -26,9 +25,8 @@ class Zabo(models.Model):
         ('A', 'Payment on account')
     )
     founder =  models.ForeignKey(
-        'users.ZaboUser', on_delete=models.CASCADE,
+        ZaboUser, on_delete=models.CASCADE,
     )
-    poster = models.FileField(upload_to='posters/%Y/%m/%d/')
     location = models.CharField(max_length=50)
     content = models.TextField
     category = models.CharField(
@@ -45,14 +43,20 @@ class Zabo(models.Model):
     limit = models.IntegerField(default = 1000)
     deadline = models.DateTimeField
     is_deleted = models.BooleanField(default = False)
-    is_validated = models.BooleanField(default = False)
-    is_published = models.BooleanField(default = False)
+    is_validated = models.BooleanField(default = False) # 관리자에게 승인받았는지 여부.
 
+
+class Poster(models.Model):
+    zabo  = models.ForeignKey(
+        Zabo,
+        on_delete=models.CASCADE,
+    )
+    image = models.FileField(upload_to='posters/%Y/%m/%d/')
 
 
 class Timeslot(models.Model):
     zabo = models.ForeignKey(
-        'Zabo',
+        Zabo,
         on_delete=models.CASCADE,
     )
     start_time = models.DateTimeField
@@ -61,11 +65,11 @@ class Timeslot(models.Model):
 
 class Comment(models.Model):
     zabo = models.ForeignKey(
-        'Zabo',
+        Zabo,
         on_delete=models.CASCADE,
     )
     #author =
-    content = models.charField(max_length = 140)
+    content = models.CharField(max_length = 140)
     created_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
     is_private = models.BooleanField(default = False)
@@ -74,11 +78,11 @@ class Comment(models.Model):
 
 class Recomment(models.Model):
     comment = models.ForeignKey(
-        'Comment',
+        Comment,
         on_delete=models.CASCADE,
     )
     #author =
-    content = models.charField(max_length = 140)
+    content = models.CharField(max_length = 140)
     created_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
     is_private = models.BooleanField(default = False)
@@ -87,11 +91,11 @@ class Recomment(models.Model):
 
 class Participate(models.Model):
     zabo = models.ForeignKey(
-        'Zabo',
+        Zabo,
         on_delete=models.CASCADE,
     )
     participants = models.OneToOneField(
-        'users.ZaboUser',
+        ZaboUser,
         on_delete= models.CASCADE,
     )
     is_paid = models.BooleanField(default = False)
