@@ -28,7 +28,7 @@ class Zabo(models.Model):
         ZaboUser, on_delete=models.CASCADE,
     )
     location = models.CharField(max_length=50)
-    content = models.TextField
+    content = models.TextField(blank=True, null=True)
     category = models.CharField(
         max_length=1, choices=CATEGORY
     )
