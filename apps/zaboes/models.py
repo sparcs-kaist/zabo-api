@@ -5,13 +5,14 @@ from django.conf import settings
 from django.db import models
 from apps.users.models import ZaboUser
 
+
 class Zabo(models.Model):
     CATEGORY = (
         ('R', 'Recruting'),
         ('P', 'Performance'),
         ('C', 'Competition'),
         ('F', 'Fair'),
-        ('L','Lecture'),
+        ('L', 'Lecture'),
         ('E', 'Exhibition'),
     )
     APPLY = (
@@ -19,12 +20,12 @@ class Zabo(models.Model):
         ('S', 'On-site reception'),
         ('E', 'External application')
     )
-    PAYMENT_PLAN= (
+    PAYMENT_PLAN = (
         ('F', 'FREE'),
         ('Z', 'Paid by zabo'),
         ('A', 'Payment on account')
     )
-    founder =  models.ForeignKey(
+    founder = models.ForeignKey(
         ZaboUser, on_delete=models.CASCADE,
     )
     location = models.CharField(max_length=50)
@@ -40,14 +41,14 @@ class Zabo(models.Model):
     )
     created_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
-    limit = models.IntegerField(default = 1000)
+    limit = models.IntegerField(default=1000)
     deadline = models.DateTimeField
-    is_deleted = models.BooleanField(default = False)
-    is_validated = models.BooleanField(default = False) # 관리자에게 승인받았는지 여부.
+    is_deleted = models.BooleanField(default=False)
+    is_validated = models.BooleanField(default=False)  # 관리자에게 승인받았는지 여부.
 
 
 class Poster(models.Model):
-    zabo  = models.ForeignKey(
+    zabo = models.ForeignKey(
         Zabo,
         on_delete=models.CASCADE,
     )
@@ -61,33 +62,36 @@ class Timeslot(models.Model):
     )
     start_time = models.DateTimeField
     end_time = models.DateTimeField
-    is_main = models.BooleanField(default = False)
+    is_main = models.BooleanField(default=False)
+
 
 class Comment(models.Model):
     zabo = models.ForeignKey(
         Zabo,
         on_delete=models.CASCADE,
     )
-    #author =
-    content = models.CharField(max_length = 140)
+    # author =
+    content = models.CharField(max_length=140)
     created_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
-    is_private = models.BooleanField(default = False)
-    is_deleted = models.BooleanField(default = False)
-    is_blocked = models.BooleanField(default = False)
+    is_private = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
+    is_blocked = models.BooleanField(default=False)
+
 
 class Recomment(models.Model):
     comment = models.ForeignKey(
         Comment,
         on_delete=models.CASCADE,
     )
-    #author =
-    content = models.CharField(max_length = 140)
+    # author =
+    content = models.CharField(max_length=140)
     created_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
-    is_private = models.BooleanField(default = False)
-    is_deleted = models.BooleanField(default = False)
-    is_blocked = models.BooleanField(default = False)
+    is_private = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
+    is_blocked = models.BooleanField(default=False)
+
 
 class Participate(models.Model):
     zabo = models.ForeignKey(
@@ -96,7 +100,7 @@ class Participate(models.Model):
     )
     participants = models.OneToOneField(
         ZaboUser,
-        on_delete= models.CASCADE,
+        on_delete=models.CASCADE,
     )
-    is_paid = models.BooleanField(default = False)
-    is_approved = models.BooleanField(default = False)
+    is_paid = models.BooleanField(default=False)
+    is_approved = models.BooleanField(default=False)
