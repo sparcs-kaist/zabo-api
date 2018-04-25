@@ -42,3 +42,4 @@ class ZaboViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, pk=None):
         pass
+
