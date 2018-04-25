@@ -15,6 +15,9 @@ class ZaboUserManager(BaseUserManager):
 
         return user
 
+    def get_by_natural_key(self, email_):
+        return self.get(email=email_)
+
     def create_user(self, email, password=None):
         return self._create_user(email, password, False, False, is_active=False)
 
@@ -28,7 +31,7 @@ class ZaboUser(AbstractBaseUser): #이메일 인증을 하려면 abstractbaseuse
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
-    objects = ZaboUserManager
+    objects = ZaboUserManager()
 
     email = models.EmailField(blank=True, unique=True)
     first_name = models.CharField( max_length=30, blank=True)

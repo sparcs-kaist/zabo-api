@@ -1,5 +1,6 @@
 from django.conf.urls import include, url
+from django.urls import path, re_path
 
 urlpatterns = (
-    #url(r'^users/', include('api.users.urls')),
+    path('zaboes/', include('api.zaboes.urls')),
 )
