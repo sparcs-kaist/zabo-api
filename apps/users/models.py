@@ -27,10 +27,9 @@ class ZaboUserManager(BaseUserManager):
 
 
 # Django expects your custom user model to meet some minimum requirements. usernamefiled 정의해야함.
- # 이메일 인증을 하려면 abstractbaseuser여야함.
-#permission mixdin은 permission 관련 method를 자동으로 추가해줌.
+# 이메일 인증을 하려면 abstractbaseuser여야함.
+# permission mixin은 permission 관련 method를 자동으로 추가해줌.
 class ZaboUser(AbstractBaseUser, PermissionsMixin):
-
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     objects = ZaboUserManager()

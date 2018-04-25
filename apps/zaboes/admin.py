@@ -1,7 +1,7 @@
 from django.contrib import admin
 
+from apps.zaboes.models import Zabo, Comment, Poster, Recomment, Timeslot, Participate
 
-from apps.zaboes.models import Zabo, Comment, Poster, Recomment, Timeslot,Participate
 # Register your models here.
 
 admin.site.register(Zabo)
