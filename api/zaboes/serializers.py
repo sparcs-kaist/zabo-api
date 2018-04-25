@@ -11,12 +11,14 @@ class ZaboSerializer(serializers.ModelSerializer):
         read_only_fields = (
             'created_time',
             'updated_time',
-        ) #auto_now_add나 auto_now가 true이면 read_only_fields여야 함.
+        )  # auto_now_add나 auto_now가 true이면 read_only_fields여야 함.
+
 
 class TimeslotSerializer(serializers.ModelSerializer):
     class Meta:
         model = Timeslot
         fields = '__all__'
+
 
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,6 +28,7 @@ class CommentSerializer(serializers.ModelSerializer):
             'created_time',
             'updated_time',
         )
+
 
 class RecommentSerializer(serializers.ModelSerializer):
     class Meta:

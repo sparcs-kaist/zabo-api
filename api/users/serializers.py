@@ -6,9 +6,9 @@ from apps.users.models import ZaboUser
 class ZabouserSerializer(serializers.ModelSerializer):
     class Meta:
         model = ZaboUser
-        fileds = '__all__'
+        fields = '__all__'
         read_only_fields = (
-            'joined_date'
+            'joined_date',
         ) #auto_now_add나 auto_now가 true이면 read_only_fields여야 함.
 
 
