@@ -1,9 +1,9 @@
 from django.conf.urls import include, url
 from rest_framework.routers import DefaultRouter
+from api.users.routers import zabouser_router
 
-router = DefaultRouter()
 
 urlpatterns = [
     url(r'^',
-        include(router.urls)),
+        include(zabouser_router.urls)),
 ]

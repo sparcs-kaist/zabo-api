@@ -29,6 +29,7 @@ urlpatterns = [
     url(r'^api-token-verify/', verify_jwt_token),
     url(r'^schema/$', schema_view),
 
+
 ]
 
 if settings.DEBUG:
