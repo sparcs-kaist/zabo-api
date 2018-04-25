@@ -4,6 +4,6 @@ from api.zaboes.views import ZaboViewSet
 
 zabo_router = DefaultRouter()
 zabo_router.register(
-    prefix=r'zaboes',
+    prefix=r'',
     viewset=ZaboViewSet,
 )
