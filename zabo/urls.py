@@ -31,7 +31,7 @@ urlpatterns = [
     url(r'^schema/$', schema_view),
     url(r'^admin/', admin.site.urls),
 
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL,
