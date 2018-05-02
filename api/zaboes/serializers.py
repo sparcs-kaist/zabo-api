@@ -5,9 +5,17 @@ from django.conf import settings
 
 
 class ZaboSerializer(serializers.ModelSerializer):
+    comments = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='comment-detail'
+    )
+
     class Meta:
         model = Zabo
-        fileds = '__all__'
+        fields = (
+            'founder', 'location', 'content', 'category', 'apply', 'payment', 'created_time','updated_time', 'limit',
+            'comments')
         read_only_fields = (
             'created_time',
             'updated_time',
@@ -23,7 +31,7 @@ class TimeslotSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fileds = '__all__'
+        fields = '__all__'
         read_only_fields = (
             'created_time',
             'updated_time',
@@ -32,8 +40,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class RecommentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Comment
-        fileds = '__all__'
+        model = Recomment
+        fields = '__all__'
         read_only_fields = (
             'created_time',
             'updated_time',
