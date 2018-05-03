@@ -50,6 +50,7 @@ class Zabo(models.Model):
 class Poster(models.Model):
     zabo = models.ForeignKey(
         Zabo,
+        related_name='posters',
         on_delete=models.CASCADE,
     )
     image = models.FileField(upload_to='posters/%Y/%m/%d/')
@@ -58,6 +59,7 @@ class Poster(models.Model):
 class Timeslot(models.Model):
     zabo = models.ForeignKey(
         Zabo,
+        related_name='timeslots',
         on_delete=models.CASCADE,
     )
     start_time = models.DateTimeField
@@ -68,6 +70,7 @@ class Timeslot(models.Model):
 class Comment(models.Model):
     zabo = models.ForeignKey(
         Zabo,
+        related_name='comments',
         on_delete=models.CASCADE,
     )
     # author =
@@ -82,6 +85,7 @@ class Comment(models.Model):
 class Recomment(models.Model):
     comment = models.ForeignKey(
         Comment,
+        related_name='recomments',
         on_delete=models.CASCADE,
     )
     # author =

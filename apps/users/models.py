@@ -2,7 +2,7 @@ import uuid
 
 from django.conf import settings
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
 
 class ZaboUserManager(BaseUserManager):
@@ -27,9 +27,9 @@ class ZaboUserManager(BaseUserManager):
 
 
 # Django expects your custom user model to meet some minimum requirements. usernamefiled 정의해야함.
-
-class ZaboUser(AbstractBaseUser):  # 이메일 인증을 하려면 abstractbaseuser여야함.
-
+# 이메일 인증을 하려면 abstractbaseuser여야함.
+# permission mixin은 permission 관련 method를 자동으로 추가해줌.
+class ZaboUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
     objects = ZaboUserManager()
