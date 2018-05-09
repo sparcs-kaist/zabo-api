@@ -10,7 +10,7 @@ zabo_router.register(
 
 poster_router = DefaultRouter()
 poster_router.register(
-    prefix=r'',
+    prefix=r'posters',
     viewset=PosterViewSet,
 )
 

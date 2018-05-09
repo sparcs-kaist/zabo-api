@@ -14,13 +14,47 @@ class ZaboSerializer(serializers.ModelSerializer):
     class Meta:
         model = Zabo
         fields = (
-            'founder', 'location', 'content', 'category', 'apply', 'payment', 'created_time', 'updated_time', 'limit',
-            'posters')
+            'founder',
+            'location',
+            'content',
+            'category',
+            'apply',
+            'payment',
+            'created_time',
+            'updated_time',
+            'limit',
+            'posters'
+        )
         read_only_fields = (
             'created_time',
             'updated_time',
         )  # auto_now_add나 auto_now가 true이면 read_only_fields여야 함.
 
+
+class PosterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Poster
+        fields = (
+            'zabo',
+            'image',
+        )
+
+
+class ZaboCreateSerializer(serializers.ModelSerializer):
+    posters = PosterSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Zabo
+        fields = (
+            'location',
+            'content',
+            'category',
+            'apply',
+            'payment',
+            'limit',
+            #'deadline',
+            'posters',
+        )
 
 
 class TimeslotSerializer(serializers.ModelSerializer):
@@ -48,9 +82,5 @@ class RecommentSerializer(serializers.ModelSerializer):
             'updated_time',
         )
 
-class PosterSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Poster
-        fields = '__all__'
 
 
