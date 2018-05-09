@@ -2,12 +2,12 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import viewsets
 from apps.zaboes.models import *
-from api.zaboes.serializers import ZaboSerializer, CommentSerializer
+from api.zaboes.serializers import ZaboSerializer, CommentSerializer, RecommentSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from zabo.common.permissions import IsOwnerOrReadOnly
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
-
+from rest_framework import status
 
 # Create your views here.
 
@@ -20,6 +20,8 @@ class ZaboViewSet(viewsets.ModelViewSet):
     serializer_class = ZaboSerializer
     queryset = Zabo.objects.all()
 
+
+
     def list(self, request):
         serializer = ZaboSerializer(self.queryset, many=True, context={'request': request})
         return Response(serializer.data)
@@ -31,20 +33,48 @@ class ZaboViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, pk=None):
         zabo = get_object_or_404(self.queryset, pk=pk)
+        if(zabo.is_deleted):
+            return Response(status=status.HTTP_204_NO_CONTENT)
         serializer = ZaboSerializer(zabo, context={'request': request})
         return Response(serializer.data)
 
-    def update(self, request, pk=None):
-        pass
-
-    def partial_update(self, request, pk=None):
-        pass
 
     def destroy(self, request, pk=None):
-        pass
+        instance = get_object_or_404(self.queryset, pk=pk)
+        setattr(instance, "is_deleted", True)
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
+
+    def list(self, request):
+        serializer = CommentSerializer(self.queryset, many=True, context={'request': request})
+        return Response(serializer.data)
+
+
+    def perform_create(self, serializer):
+        serializer.save(
+            author=self.request.user,
+        )
+
+
+
+class RecommentViewSet(viewsets.ModelViewSet):
+    serializer_class = RecommentSerializer
+    queryset = Recomment.objects.all()
+
+    def list(self, request):
+        serializer = self.get_serializer(self.queryset, many=True, context={'request': request})
+        return Response(serializer.data)
+
+
+    def perform_create(self, serializer):
+        serializer.save(
+            author=self.request.user,
+        )
+
+
 

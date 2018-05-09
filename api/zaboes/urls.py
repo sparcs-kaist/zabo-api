@@ -6,6 +6,6 @@ from api.zaboes import views
 
 urlpatterns = [
     url(r'^', include(zabo_router.urls)),
-    url(r'^comments/', include(comment_router.urls))
+    url(r'comments/', include(comment_router.urls))
 
 ]
