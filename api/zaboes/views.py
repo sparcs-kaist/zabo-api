@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework import viewsets, mixins
 
@@ -29,6 +30,33 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
     def list(self, request):
         serializer = ZaboSerializer(self.queryset, many=True, context={'request': request})
         return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        zabo = serializer.save(
+            founder=self.request.user
+        )
+
+        # save poster instance (can be more than one)
+        i = 0
+        print("sssssssssss")
+        print(len(request.FILES))
+        for i in range(len(request.FILES)):
+            poster = request.FILES['posters['+str(i)+']']
+            instance = Poster(zabo=zabo, image=poster)
+            instance.save()
+
+
+        posters = request.FILES.getlist('posters')
+        print (len(posters))
+        for poster in posters:
+            instance = Poster(zabo=zabo, image=poster)
+            instance.save()
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 
     def perform_create(self, serializer):
         serializer.save(
