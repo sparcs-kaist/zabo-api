@@ -26,7 +26,7 @@ schema_view = get_schema_view(title='Pastebin API')
 swagger_view = get_swagger_view(title="Pastebian API")
 
 urlpatterns = [
-    url(r'^api/', include('api.urls')),
+    url(r'^', include('api.urls')),
     url(r'^api-token-auth/', obtain_jwt_token),
     url(r'^api-token-refresh/', refresh_jwt_token),
     url(r'^api-token-verify/', verify_jwt_token),

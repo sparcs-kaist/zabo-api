@@ -5,8 +5,10 @@ from rest_framework_swagger.views import get_swagger_view
 swagger_view = get_swagger_view(title="Pastebian API")
 
 
+from api.zaboes.routers import  *
 urlpatterns = (
-    path('zaboes/', include('api.zaboes.urls')),
+
+    url(r'^api/', include(router.urls)),
     path('users/', include('api.users.urls')),
     url(r'^swagger/$', swagger_view),
 

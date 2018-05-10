@@ -68,9 +68,13 @@ class Timeslot(models.Model):
 class Comment(models.Model):
     zabo = models.ForeignKey(
         Zabo,
+        related_name='comments',
         on_delete=models.CASCADE,
     )
-    # author =
+    author = models.ForeignKey(
+        ZaboUser, on_delete=models.CASCADE, default=None
+
+    )
     content = models.CharField(max_length=140)
     created_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
@@ -82,9 +86,13 @@ class Comment(models.Model):
 class Recomment(models.Model):
     comment = models.ForeignKey(
         Comment,
+        related_name='recomments',
         on_delete=models.CASCADE,
     )
-    # author =
+    author = models.ForeignKey(
+        ZaboUser, on_delete=models.CASCADE,
+        default=None
+    )
     content = models.CharField(max_length=140)
     created_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
