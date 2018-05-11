@@ -56,8 +56,12 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
     def perform_create(self, serializer):
+        zabo_id = int(self.request.data["zabo"])
+        zabo = get_object_or_404(Zabo.objects.all(), pk=zabo_id)
+
         serializer.save(
             author=self.request.user,
+            zabo=zabo
         )
 
 
