@@ -1,11 +1,9 @@
 from django.conf.urls import include, url
 from django.urls import path, re_path
 from rest_framework_swagger.views import get_swagger_view
+from api.zaboes.routers import *
 
 swagger_view = get_swagger_view(title="Pastebian API")
-
-
-from api.zaboes.routers import  *
 urlpatterns = (
 
     url(r'^api/', include(router.urls)),

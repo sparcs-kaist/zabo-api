@@ -8,8 +8,9 @@ from rest_framework import permissions
 from zabo.common.permissions import IsOwnerOrReadOnly
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework import status
-
 # Create your views here.
+from zabo.common.permissions import IsAuthenticated
+
 
 class ZaboViewSet(viewsets.ModelViewSet):
     """
@@ -19,7 +20,7 @@ class ZaboViewSet(viewsets.ModelViewSet):
     """
     serializer_class = ZaboSerializer
     queryset = Zabo.objects.all()
-
+    # permission_classes = (IsAuthenticated, )
 
 
     def list(self, request):
