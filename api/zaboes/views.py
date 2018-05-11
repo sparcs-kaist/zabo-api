@@ -57,8 +57,12 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
     def perform_create(self, serializer):
+        zabo_id = int(self.request.data["zabo"])
+        zabo = get_object_or_404(Zabo.objects.all(), pk=zabo_id)
+
         serializer.save(
             author=self.request.user,
+            zabo=zabo
         )
 
 
@@ -73,7 +77,11 @@ class RecommentViewSet(viewsets.ModelViewSet):
 
 
     def perform_create(self, serializer):
+        comment_id = int(self.request.data["comment"])
+        comment = get_object_or_404(Comment.objects.all(), pk=comment_id)
+
         serializer.save(
+            comment = comment,
             author=self.request.user,
         )
 
