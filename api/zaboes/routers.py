@@ -11,9 +11,9 @@ router.register(
 )
 
 router.register(
-    prefix=r'',
+    prefix=r'posters',
     viewset=PosterViewSet,
-
+)
   
 router.register(
     prefix=r'comments',
