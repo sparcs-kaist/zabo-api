@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import viewsets
 from apps.zaboes.models import *
-from api.zaboes.serializers import ZaboSerializer, CommentSerializer, RecommentSerializer
+from api.zaboes.serializers import ZaboSerializer, CommentSerializer, RecommentSerializer, PosterSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from zabo.common.permissions import IsOwnerOrReadOnly
@@ -34,6 +34,7 @@ class ZaboViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, pk=None):
         zabo = get_object_or_404(self.queryset, pk=pk)
+
         if(zabo.is_deleted):
             return Response(status=status.HTTP_204_NO_CONTENT)
         serializer = ZaboSerializer(zabo, context={'request': request})
@@ -87,3 +88,6 @@ class RecommentViewSet(viewsets.ModelViewSet):
 
 
 
+class PosterViewSet(viewsets.ModelViewSet):
+    serializer_class = PosterSerializer
+    queryset = Poster.objects.all()
