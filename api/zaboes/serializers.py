@@ -1,9 +1,7 @@
 from django.apps import apps as django_apps
 from rest_framework import serializers
-from apps.zaboes.models import Zabo, Timeslot, Comment, Recomment, Participate
+from apps.zaboes.models import Zabo, Timeslot, Comment, Recomment, Participate, Poster
 from django.conf import settings
-
-
 
 
 class TimeslotSerializer(serializers.ModelSerializer):
@@ -44,9 +42,19 @@ class CommentSerializer(serializers.ModelSerializer):
             'updated_time',
         )
 
+class PosterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Poster
+        fields = '__all__'
+
+
 class ZaboSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
-
+    posters = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='poster-detail'
+    )
     class Meta:
         model = Zabo
         fields = (
@@ -59,6 +67,7 @@ class ZaboSerializer(serializers.ModelSerializer):
             'created_time',
             'updated_time',
             'limit',
+            'posters',
             'comments')
         read_only_fields = (
             'created_time',
