@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import viewsets
 from apps.zaboes.models import *
-from api.zaboes.serializers import ZaboSerializer, CommentSerializer, RecommentSerializer, PosterSerializer
+from api.zaboes.serializers import ZaboSerializer, ZaboListSerializer, CommentSerializer, RecommentSerializer, PosterSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from zabo.common.permissions import IsOwnerOrReadOnly
@@ -26,13 +26,12 @@ class ZaboViewSet(viewsets.ModelViewSet):
 
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
-
         page = self.paginate_queryset(queryset)
         if page is not None:
-            serializer = self.get_serializer(page, many=True)
+            serializer = ZaboListSerializer(page, many=True, context={'request': request})
             return self.get_paginated_response(serializer.data)
 
-        serializer = self.get_serializer(queryset, many=True)
+        serializer = ZaboListSerializer(page, many=True, context={'request': request})
         return Response(serializer.data)
 
     def perform_create(self, serializer):
