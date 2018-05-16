@@ -74,6 +74,7 @@ class ZaboSerializer(serializers.ModelSerializer):
             'updated_time',
         )  # auto_now_add나 auto_now가 true이면 read_only_fields여야 함.
 
+
 class ZaboListSerializer(serializers.ModelSerializer):
     posters = PosterSerializer(many=True, read_only=True)
 
@@ -82,4 +83,10 @@ class ZaboListSerializer(serializers.ModelSerializer):
         fields = (
             'founder',
             'posters',
-            )# auto_now_add나 auto_now가 true이면 read_only_fields여야 함.
+            'created_time',
+            'updated_time',
+        )
+        read_only_fields = (
+            'created_time',
+            'updated_time',
+        )  # auto_now_add나 auto_now가 true이면 read_only_fields여야 함.

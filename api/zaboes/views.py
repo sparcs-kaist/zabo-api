@@ -25,13 +25,10 @@ class ZaboViewSet(viewsets.ModelViewSet):
     # permission_classes = (IsAuthenticated, )
 
     def list(self, request):
-
-
         queryset = self.filter_queryset(self.get_queryset())
-
         page = self.paginate_queryset(queryset)
         if page is not None:
-            serializer = ZaboListSerializer(page, many=True, context={'request':request})
+            serializer = ZaboListSerializer(page, many=True, context={'request': request})
             return self.get_paginated_response(serializer.data)
 
         serializer = ZaboListSerializer(page, many=True, context={'request': request})
