@@ -50,11 +50,7 @@ class PosterSerializer(serializers.ModelSerializer):
 
 class ZaboSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
-    posters = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='poster-detail'
-    )
+    posters = PosterSerializer(many=True, read_only=True)
     class Meta:
         model = Zabo
         fields = (
