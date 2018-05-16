@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import viewsets
@@ -23,9 +24,9 @@ class ZaboViewSet(viewsets.ModelViewSet):
     # permission_classes = (IsAuthenticated, )
 
 
-    def list(self, request):
-        serializer = ZaboSerializer(self.queryset, many=True, context={'request': request})
-        return Response(serializer.data)
+    # def list(self, request):
+    #     serializer = ZaboSerializer(self.queryset, many=True, context={'request': request})
+    #     return Response(serializer.data)
 
     def perform_create(self, serializer):
         serializer.save(

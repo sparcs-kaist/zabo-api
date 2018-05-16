@@ -4,13 +4,13 @@ from rest_framework.response import Response
 
 class StandardPagination(PageNumberPagination):
     page_size = 20
-    page_size_query_parm = 'page_size'
+    page_size_query_param = 'page_size'
     max_page_size = 1000
 
     def get_paginated_response(self, data):
         current = int(self.request.GET.get('page', 1))
         p_size = int(self.request.GET.get(
-            self.page_size_query_parm, self.page_size))
+            self.page_size_query_param, self.page_size))
 
         result = {
             'links': {
