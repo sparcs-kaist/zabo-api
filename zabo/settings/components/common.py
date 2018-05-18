@@ -13,9 +13,12 @@ INSTALLED_APPS = [
     'rest_framework',
     'apps.users',
     'apps.zaboes',
+    'rest_framework_swagger',
+    'corsheaders', #django-cors-headers
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # <- 다른 것들보다 앞에 위치시켜주세요., django-cors-headers
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -47,3 +50,16 @@ TEMPLATES = [
 WSGI_APPLICATION = 'zabo.wsgi.application'
 
 INTERNAL_IPS = ('127.0.0.1', )
+
+ALLOWED_HOSTS = ["http://localhost:8080"]
+
+# django-cors-headers
+# #
+# CORS_ORIGIN_WHITELIST = (
+#
+#     # 'localhost:8080',
+#
+#
+# )
+
+CORS_ORIGIN_ALLOW_ALL = True
