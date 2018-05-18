@@ -39,18 +39,10 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         )
 
         # save poster instance (can be more than one)
-        i = 0
-        print("sssssssssss")
-        print(len(request.FILES))
         for i in range(len(request.FILES)):
+            # 현재는 posters array에서 각각(posters[0], posters[1])이렇게 접근하는 방법을
+            # 몰라서 이렇게 해놓음, 확인 바람
             poster = request.FILES['posters['+str(i)+']']
-            instance = Poster(zabo=zabo, image=poster)
-            instance.save()
-
-
-        posters = request.FILES.getlist('posters')
-        print (len(posters))
-        for poster in posters:
             instance = Poster(zabo=zabo, image=poster)
             instance.save()
 
