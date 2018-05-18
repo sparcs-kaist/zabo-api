@@ -2,28 +2,35 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import viewsets
 from apps.zaboes.models import *
-from api.zaboes.serializers import ZaboSerializer, CommentSerializer, RecommentSerializer
+from api.zaboes.serializers import ZaboSerializer, ZaboListSerializer, CommentSerializer, RecommentSerializer, PosterSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from zabo.common.permissions import IsOwnerOrReadOnly
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework import status
-
 # Create your views here.
+from zabo.common.permissions import IsAuthenticated
+
 
 class ZaboViewSet(viewsets.ModelViewSet):
     """
         This viewset automatically provides `list`, `create`, `retrieve`,
         `update` and `destroy` actions.
-
     """
     serializer_class = ZaboSerializer
     queryset = Zabo.objects.all()
+    filter_fields = ('category',)
 
-
+    # permission_classes = (IsAuthenticated, )
 
     def list(self, request):
-        serializer = ZaboSerializer(self.queryset, many=True, context={'request': request})
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = ZaboListSerializer(page, many=True, context={'request': request})
+            return self.get_paginated_response(serializer.data)
+
+        serializer = ZaboListSerializer(page, many=True, context={'request': request})
         return Response(serializer.data)
 
     def perform_create(self, serializer):
@@ -33,6 +40,7 @@ class ZaboViewSet(viewsets.ModelViewSet):
 
     def retrieve(self, request, pk=None):
         zabo = get_object_or_404(self.queryset, pk=pk)
+
         if(zabo.is_deleted):
             return Response(status=status.HTTP_204_NO_CONTENT)
         serializer = ZaboSerializer(zabo, context={'request': request})
@@ -56,8 +64,12 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
     def perform_create(self, serializer):
+        zabo_id = int(self.request.data["zabo"])
+        zabo = get_object_or_404(Zabo.objects.all(), pk=zabo_id)
+
         serializer.save(
             author=self.request.user,
+            zabo=zabo
         )
 
 
@@ -72,9 +84,16 @@ class RecommentViewSet(viewsets.ModelViewSet):
 
 
     def perform_create(self, serializer):
+        comment_id = int(self.request.data["comment"])
+        comment = get_object_or_404(Comment.objects.all(), pk=comment_id)
+
         serializer.save(
+            comment = comment,
             author=self.request.user,
         )
 
 
 
+class PosterViewSet(viewsets.ModelViewSet):
+    serializer_class = PosterSerializer
+    queryset = Poster.objects.all()

@@ -1,9 +1,7 @@
 from django.apps import apps as django_apps
 from rest_framework import serializers
-from apps.zaboes.models import Zabo, Timeslot, Comment, Recomment, Participate
+from apps.zaboes.models import Zabo, Timeslot, Comment, Recomment, Participate, Poster
 from django.conf import settings
-
-
 
 
 class TimeslotSerializer(serializers.ModelSerializer):
@@ -29,6 +27,7 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = (
+            'id',
             'author',
             'content',
             'created_time',
@@ -43,9 +42,15 @@ class CommentSerializer(serializers.ModelSerializer):
             'updated_time',
         )
 
+class PosterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Poster
+        fields = '__all__'
+
+
 class ZaboSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
-
+    posters = PosterSerializer(many=True, read_only=True)
     class Meta:
         model = Zabo
         fields = (
@@ -58,7 +63,25 @@ class ZaboSerializer(serializers.ModelSerializer):
             'created_time',
             'updated_time',
             'limit',
+            'posters',
             'comments')
+        read_only_fields = (
+            'created_time',
+            'updated_time',
+        )  # auto_now_add나 auto_now가 true이면 read_only_fields여야 함.
+
+
+class ZaboListSerializer(serializers.ModelSerializer):
+    posters = PosterSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Zabo
+        fields = (
+            'founder',
+            'posters',
+            'created_time',
+            'updated_time',
+        )
         read_only_fields = (
             'created_time',
             'updated_time',
