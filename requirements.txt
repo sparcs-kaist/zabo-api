@@ -6,10 +6,11 @@ coreapi-cli==1.0.9
 coreschema==0.0.4
 dataclasses==0.4
 Django==2.0.2
+django-cors-headers==2.2.0
 django-filter==1.1.0
 django-rest-swagger==2.2.0
 django-split-settings==0.3.0
-djangorestframework==3.7.7
+djangorestframework==3.8.2
 djangorestframework-jwt==1.11.0
 djangotoolbox==1.8.0
 ez-setup==0.9
