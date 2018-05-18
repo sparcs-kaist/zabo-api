@@ -52,8 +52,11 @@ class Poster(models.Model):
         Zabo,
         related_name='posters',
         on_delete=models.CASCADE,
+        blank = True,
+        null = True
     )
-    image = models.FileField(upload_to='posters/%Y/%m/%d/')
+    #image = models.FileField(upload_to='posters/%Y/%m/%d/')
+    image = models.FileField(upload_to='posters/')
 
 
 class Timeslot(models.Model):

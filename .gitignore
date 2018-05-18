@@ -98,6 +98,9 @@ ENV/
 # Node
 node_modules/
 
+# Media
+media/
+
 assets/
 
 db.sqlite3

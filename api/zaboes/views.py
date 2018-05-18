@@ -10,9 +10,11 @@ from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework import status
 # Create your views here.
 from zabo.common.permissions import IsAuthenticated
+from api.common.viewset import ActionAPIViewSet
 
 
-class ZaboViewSet(viewsets.ModelViewSet):
+
+class ZaboViewSet(viewsets.ModelViewSet,  ActionAPIViewSet):
     """
         This viewset automatically provides `list`, `create`, `retrieve`,
         `update` and `destroy` actions.
@@ -20,6 +22,9 @@ class ZaboViewSet(viewsets.ModelViewSet):
     serializer_class = ZaboSerializer
     queryset = Zabo.objects.all()
     filter_fields = ('category',)
+    action_serializer_class = {
+        'create': ZaboCreateSerializer,
+    }
 
     # permission_classes = (IsAuthenticated, )
 
@@ -32,6 +37,28 @@ class ZaboViewSet(viewsets.ModelViewSet):
 
         serializer = ZaboListSerializer(page, many=True, context={'request': request})
         return Response(serializer.data)
+
+      
+      
+    
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        zabo = serializer.save(
+            founder=self.request.user
+        )
+
+        # save poster instance (can be more than one)
+        for i in range(len(request.FILES)):
+            # 현재는 posters array에서 각각(posters[0], posters[1])이렇게 접근하는 방법을
+            # 몰라서 이렇게 해놓음, 확인 바람
+            poster = request.FILES['posters['+str(i)+']']
+            instance = Poster(zabo=zabo, image=poster)
+            instance.save()
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 
     def perform_create(self, serializer):
         serializer.save(
@@ -91,8 +118,6 @@ class RecommentViewSet(viewsets.ModelViewSet):
             comment = comment,
             author=self.request.user,
         )
-
-
 
 class PosterViewSet(viewsets.ModelViewSet):
     serializer_class = PosterSerializer

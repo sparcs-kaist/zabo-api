@@ -4,6 +4,20 @@ from apps.zaboes.models import Zabo, Timeslot, Comment, Recomment, Participate, 
 from django.conf import settings
 
 
+
+
+class PosterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Poster
+        fields = (
+            'zabo',
+            'image',
+        )
+
+
+
+
+
 class TimeslotSerializer(serializers.ModelSerializer):
     class Meta:
         model = Timeslot
@@ -42,10 +56,6 @@ class CommentSerializer(serializers.ModelSerializer):
             'updated_time',
         )
 
-class PosterSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Poster
-        fields = '__all__'
 
 
 class ZaboSerializer(serializers.ModelSerializer):
@@ -87,3 +97,20 @@ class ZaboListSerializer(serializers.ModelSerializer):
             'created_time',
             'updated_time',
         )  # auto_now_add나 auto_now가 true이면 read_only_fields여야 함.
+        
+ class ZaboCreateSerializer(serializers.ModelSerializer):
+    posters = PosterSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Zabo
+        fields = (
+            'location',
+            'content',
+            'category',
+            'apply',
+            'payment',
+            'limit',
+            #'deadline',
+            'posters',
+        )
+        

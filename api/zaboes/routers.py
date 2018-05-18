@@ -10,6 +10,7 @@ router.register(
     viewset=ZaboViewSet,
 )
 
+
 router.register(
     prefix=r'posters',
     viewset=PosterViewSet,
