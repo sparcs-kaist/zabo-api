@@ -50,11 +50,7 @@ class PosterSerializer(serializers.ModelSerializer):
 
 class ZaboSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
-    posters = serializers.HyperlinkedRelatedField(
-        many=True,
-        read_only=True,
-        view_name='poster-detail'
-    )
+    posters = PosterSerializer(many=True, read_only=True)
     class Meta:
         model = Zabo
         fields = (
@@ -69,6 +65,23 @@ class ZaboSerializer(serializers.ModelSerializer):
             'limit',
             'posters',
             'comments')
+        read_only_fields = (
+            'created_time',
+            'updated_time',
+        )  # auto_now_add나 auto_now가 true이면 read_only_fields여야 함.
+
+
+class ZaboListSerializer(serializers.ModelSerializer):
+    posters = PosterSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Zabo
+        fields = (
+            'founder',
+            'posters',
+            'created_time',
+            'updated_time',
+        )
         read_only_fields = (
             'created_time',
             'updated_time',

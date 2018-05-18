@@ -1,9 +1,8 @@
-from django.conf import settings
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import viewsets
 from apps.zaboes.models import *
-from api.zaboes.serializers import ZaboSerializer, CommentSerializer, RecommentSerializer, PosterSerializer
+from api.zaboes.serializers import ZaboSerializer, ZaboListSerializer, CommentSerializer, RecommentSerializer, PosterSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from zabo.common.permissions import IsOwnerOrReadOnly
@@ -17,16 +16,22 @@ class ZaboViewSet(viewsets.ModelViewSet):
     """
         This viewset automatically provides `list`, `create`, `retrieve`,
         `update` and `destroy` actions.
-
     """
     serializer_class = ZaboSerializer
     queryset = Zabo.objects.all()
+    filter_fields = ('category',)
+
     # permission_classes = (IsAuthenticated, )
 
+    def list(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = ZaboListSerializer(page, many=True, context={'request': request})
+            return self.get_paginated_response(serializer.data)
 
-    # def list(self, request):
-    #     serializer = ZaboSerializer(self.queryset, many=True, context={'request': request})
-    #     return Response(serializer.data)
+        serializer = ZaboListSerializer(page, many=True, context={'request': request})
+        return Response(serializer.data)
 
     def perform_create(self, serializer):
         serializer.save(
