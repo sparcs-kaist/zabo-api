@@ -77,6 +77,7 @@ class ZaboListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Zabo
         fields = (
+            'id',
             'founder',
             'posters',
             'created_time',
