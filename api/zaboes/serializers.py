@@ -61,6 +61,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class ZaboSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
     posters = PosterSerializer(many=True, read_only=True)
+    timeslots = TimeslotSerializer(many=True, read_only=True)
     class Meta:
         model = Zabo
         fields = (
@@ -74,7 +75,9 @@ class ZaboSerializer(serializers.ModelSerializer):
             'updated_time',
             'limit',
             'posters',
-            'comments')
+            'comments',
+            'timeslots'
+            )
         read_only_fields = (
             'created_time',
             'updated_time',

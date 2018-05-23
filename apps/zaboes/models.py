@@ -65,6 +65,7 @@ class Timeslot(models.Model):
         related_name='timeslots',
         on_delete=models.CASCADE,
     )
+    content = models.CharField(max_length=50, default=None)
     start_time = models.DateTimeField
     end_time = models.DateTimeField
     is_main = models.BooleanField(default=False)
