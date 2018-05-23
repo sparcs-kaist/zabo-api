@@ -68,7 +68,6 @@ class Timeslot(models.Model):
     content = models.CharField(max_length=50, default=None)
     start_time = models.DateTimeField
     end_time = models.DateTimeField
-    is_main = models.BooleanField(default=False)
 
 
 class Comment(models.Model):

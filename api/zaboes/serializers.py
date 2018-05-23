@@ -105,6 +105,7 @@ class ZaboListSerializer(serializers.ModelSerializer):
 
 class ZaboCreateSerializer(serializers.ModelSerializer):
     posters = PosterSerializer(many=True, read_only=True)
+    timeslots = TimeslotSerializer(many=True, read_only=True)
 
     class Meta:
         model = Zabo
@@ -114,8 +115,7 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
             'category',
             'apply',
             'payment',
-            'limit',
-            #'deadline',
+            'timeslots',
+            'deadline',
             'posters',
         )
-        
