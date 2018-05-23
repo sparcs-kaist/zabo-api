@@ -2,7 +2,8 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import viewsets
 from apps.zaboes.models import *
-from api.zaboes.serializers import ZaboSerializer, ZaboListSerializer, CommentSerializer, RecommentSerializer, PosterSerializer
+from api.zaboes.serializers import ZaboSerializer, ZaboListSerializer, CommentSerializer, RecommentSerializer, \
+    PosterSerializer, ZaboCreateSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from zabo.common.permissions import IsOwnerOrReadOnly
@@ -13,8 +14,7 @@ from zabo.common.permissions import IsAuthenticated
 from api.common.viewset import ActionAPIViewSet
 
 
-
-class ZaboViewSet(viewsets.ModelViewSet,  ActionAPIViewSet):
+class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
     """
         This viewset automatically provides `list`, `create`, `retrieve`,
         `update` and `destroy` actions.
@@ -24,6 +24,8 @@ class ZaboViewSet(viewsets.ModelViewSet,  ActionAPIViewSet):
     filter_fields = ('category',)
     action_serializer_class = {
         'create': ZaboCreateSerializer,
+        'list': ZaboListSerializer,
+        'retrieve': ZaboSerializer,
     }
 
     # permission_classes = (IsAuthenticated, )
@@ -31,18 +33,15 @@ class ZaboViewSet(viewsets.ModelViewSet,  ActionAPIViewSet):
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = ZaboListSerializer(page, many=True, context={'request': request})
-            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(page, many=True)
 
-        serializer = ZaboListSerializer(page, many=True, context={'request': request})
+        print("flag3")
+        if page is not None:
+            return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
 
-      
-      
-    
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(request.data)
         serializer.is_valid(raise_exception=True)
         zabo = serializer.save(
             founder=self.request.user
@@ -52,13 +51,12 @@ class ZaboViewSet(viewsets.ModelViewSet,  ActionAPIViewSet):
         for i in range(len(request.FILES)):
             # 현재는 posters array에서 각각(posters[0], posters[1])이렇게 접근하는 방법을
             # 몰라서 이렇게 해놓음, 확인 바람
-            poster = request.FILES['posters['+str(i)+']']
+            poster = request.FILES['posters[' + str(i) + ']']
             instance = Poster(zabo=zabo, image=poster)
             instance.save()
 
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
 
     def perform_create(self, serializer):
         serializer.save(
@@ -68,11 +66,11 @@ class ZaboViewSet(viewsets.ModelViewSet,  ActionAPIViewSet):
     def retrieve(self, request, pk=None):
         zabo = get_object_or_404(self.queryset, pk=pk)
 
-        if(zabo.is_deleted):
+        if (zabo.is_deleted):
             return Response(status=status.HTTP_204_NO_CONTENT)
-        serializer = ZaboSerializer(zabo, context={'request': request})
-        return Response(serializer.data)
+        serializer = self.get_serializer(zabo)
 
+        return Response(serializer.data)
 
     def destroy(self, request, pk=None):
         instance = get_object_or_404(self.queryset, pk=pk)
