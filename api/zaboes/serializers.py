@@ -21,7 +21,7 @@ class PosterSerializer(serializers.ModelSerializer):
 class TimeslotSerializer(serializers.ModelSerializer):
     class Meta:
         model = Timeslot
-        fields = '__all__'
+        fields = ('content', 'start_time', 'end_time')
 
 
 
