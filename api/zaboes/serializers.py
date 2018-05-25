@@ -104,8 +104,8 @@ class ZaboListSerializer(serializers.ModelSerializer):
 
 
 class ZaboCreateSerializer(serializers.ModelSerializer):
-    posters = PosterSerializer(many=True, read_only=True)
-    timeslots = TimeslotSerializer(many=True, read_only=True)
+    posters = PosterSerializer(many=True)
+    timeslots = TimeslotSerializer(many=True)
 
     class Meta:
         model = Zabo
@@ -119,3 +119,14 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
             'deadline',
             'posters',
         )
+
+    def create(self, validated_data):
+        timeslots_data = validated_data.pop('timeslots')
+        posters_data = validated_data.pop('posters')
+        zabo = Zabo.objects.create(**validated_data)
+        for timeslot_data in timeslots_data:
+            Timeslot.objects.create(zabo=zabo, **timeslot_data)
+
+        for poster_data in posters_data:
+            Poster.objects.create(zabo=zabo, **poster_data)
+        return zabo;
