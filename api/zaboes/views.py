@@ -46,15 +46,13 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         zabo = serializer.save(
             founder=self.request.user
         )
-
+        posters = request.data['posters'];
         # save poster instance (can be more than one)
-        for i in range(len(request.FILES)):
+        for poster in posters:
             # 현재는 posters array에서 각각(posters[0], posters[1])이렇게 접근하는 방법을
             # 몰라서 이렇게 해놓음, 확인 바람
-            poster = request.FILES['posters[' + str(i) + ']']
             instance = Poster(zabo=zabo, image=poster)
             instance.save()
-
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
