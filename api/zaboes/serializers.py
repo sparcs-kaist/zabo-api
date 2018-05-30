@@ -7,11 +7,14 @@ from django.conf import settings
 
 
 class PosterSerializer(serializers.ModelSerializer):
+    image_thumbnail = serializers.ImageField(read_only=True)
+
     class Meta:
         model = Poster
         fields = (
             'zabo',
             'image',
+            'image_thumbnail',
         )
 
 

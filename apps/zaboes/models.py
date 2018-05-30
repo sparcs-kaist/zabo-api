@@ -58,7 +58,7 @@ class Poster(models.Model):
     )
     image = models.FileField(upload_to='posters/')
     image_thumbnail = ImageSpecField(source='image',
-                                     processors=[ResizeToFill(400,800)],
+                                     processors=[ResizeToFill(600,800)],
                                      format='JPEG',
                                      options={'quality':60},
                                      )
