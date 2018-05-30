@@ -82,7 +82,10 @@ class Comment(models.Model):
         related_name='comments',
         on_delete=models.CASCADE,
     )
-    # author =
+    author = models.ForeignKey(
+        ZaboUser, on_delete=models.CASCADE, default=None
+
+    )
     content = models.CharField(max_length=140)
     created_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
@@ -97,7 +100,10 @@ class Recomment(models.Model):
         related_name='recomments',
         on_delete=models.CASCADE,
     )
-    # author =
+    author = models.ForeignKey(
+        ZaboUser, on_delete=models.CASCADE,
+        default=None
+    )
     content = models.CharField(max_length=140)
     created_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
