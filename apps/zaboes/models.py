@@ -4,7 +4,8 @@ from django.apps import apps as django_apps
 from django.conf import settings
 from django.db import models
 from apps.users.models import ZaboUser
-
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
 
 class Zabo(models.Model):
     CATEGORY = (
@@ -56,8 +57,13 @@ class Poster(models.Model):
         blank=True,
         null=True
     )
-    # image = models.FileField(upload_to='posters/%Y/%m/%d/')
     image = models.FileField(upload_to='posters/')
+    image_thumbnail = ImageSpecField(source='image',
+                                     processors=[ResizeToFill(400,800)],
+                                     format='JPEG',
+                                     options={'quality':60},
+                                     )
+
 
 
 class Timeslot(models.Model):

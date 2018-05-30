@@ -15,8 +15,12 @@ from rest_framework import status
 # from zabo.common.permissions import IsAuthenticated
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from api.common.viewset import ActionAPIViewSet
+from rest_framework.permissions import IsAuthenticated
+from PIL import Image
 from rest_framework.decorators import action
 
+
+# Create your views here.
 
 class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
     """
@@ -28,7 +32,7 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
     filter_backends = (DjangoFilterBackend, SearchFilter)
     filter_fields = ('category', 'apply', 'payment',)
     search_fields = ('title', 'content', 'location',)
-    
+
     action_serializer_class = {
         'create': ZaboCreateSerializer,
         'list': ZaboListSerializer,
@@ -48,21 +52,24 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
 
-    # def create(self, request, *args, **kwargs):
-    #     serializer = self.get_serializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     zabo = serializer.save(
-    #         founder=self.request.user
-    #     )
-    #     posters = request.data['posters'];
-    #     # save poster instance (can be more than one)
-    #     for poster in posters:
-    #         # 현재는 posters array에서 각각(posters[0], posters[1])이렇게 접근하는 방법을
-    #         # 몰라서 이렇게 해놓음, 확인 바람
-    #         instance = Poster(zabo=zabo, image=poster)
-    #         instance.save()
-    #     headers = self.get_success_headers(serializer.data)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        zabo = serializer.save(
+            founder=self.request.user
+        )
+
+        # save poster instance (can be more than one)
+        for i in range(len(request.FILES)):
+            # 현재는 posters array에서 각각(posters[0], posters[1])이렇게 접근하는 방법을
+            # 몰라서 이렇게 해놓음, 확인 바람
+            poster = request.FILES['posters['+str(i)+']']
+            instance = Poster(zabo=zabo, image=poster)
+            instance.save()
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 
     def perform_create(self, serializer):
         serializer.save(
