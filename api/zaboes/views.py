@@ -11,6 +11,7 @@ from zabo.common.permissions import IsOwnerOrReadOnly
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from api.common.viewset import ActionAPIViewSet
 from rest_framework.permissions import IsAuthenticated
+from PIL import Image
 
 
 # Create your views here.
