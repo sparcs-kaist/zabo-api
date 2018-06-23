@@ -2,8 +2,7 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import viewsets
 from apps.zaboes.models import *
-from api.zaboes.serializers import ZaboSerializer, ZaboListSerializer, CommentSerializer, RecommentSerializer, \
-    PosterSerializer, ZaboCreateSerializer
+from api.zaboes.serializers import ZaboSerializer, ZaboListSerializer, CommentSerializer, RecommentSerializer, PosterSerializer, ZaboCreateSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from zabo.common.permissions import IsOwnerOrReadOnly
@@ -19,7 +18,7 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         This viewset automatically provides `list`, `create`, `retrieve`,
         `update` and `destroy` actions.
     """
-    serializer_class = ZaboSerializer
+    # serializer_class = ZaboSerializer
     queryset = Zabo.objects.all()
     filter_fields = ('category',)
     action_serializer_class = {
@@ -35,7 +34,6 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         page = self.paginate_queryset(queryset)
         serializer = self.get_serializer(page, many=True)
 
-        print("flag3")
         if page is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
@@ -65,11 +63,9 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
 
     def retrieve(self, request, pk=None):
         zabo = get_object_or_404(self.queryset, pk=pk)
-
         if (zabo.is_deleted):
             return Response(status=status.HTTP_204_NO_CONTENT)
         serializer = self.get_serializer(zabo)
-
         return Response(serializer.data)
 
     def destroy(self, request, pk=None):

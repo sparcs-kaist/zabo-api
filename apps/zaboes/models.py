@@ -66,8 +66,8 @@ class Timeslot(models.Model):
         on_delete=models.CASCADE,
     )
     content = models.CharField(max_length=50, default=None)
-    start_time = models.DateTimeField
-    end_time = models.DateTimeField
+    start_time = models.DateTimeField(default=None)
+    end_time = models.DateTimeField(default=None)
 
 
 class Comment(models.Model):

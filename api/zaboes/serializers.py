@@ -62,6 +62,7 @@ class ZaboSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
     posters = PosterSerializer(many=True, read_only=True)
     timeslots = TimeslotSerializer(many=True, read_only=True)
+
     class Meta:
         model = Zabo
         fields = (
@@ -75,13 +76,14 @@ class ZaboSerializer(serializers.ModelSerializer):
             'updated_time',
             'limit',
             'posters',
-            'comments',
-            'timeslots'
+             'comments',
+             'timeslots'
             )
         read_only_fields = (
             'created_time',
             'updated_time',
-        )  # auto_now_add나 auto_now가 true이면 read_only_fields여야 함.
+        )
+        # auto_now_add나 auto_now가 true이면 read_only_fields여야 함.
 
 
 class ZaboListSerializer(serializers.ModelSerializer):
@@ -104,7 +106,7 @@ class ZaboListSerializer(serializers.ModelSerializer):
 
 
 class ZaboCreateSerializer(serializers.ModelSerializer):
-    posters = PosterSerializer(many=True)
+    posters = PosterSerializer(many=True, )
     timeslots = TimeslotSerializer(many=True)
 
     class Meta:
