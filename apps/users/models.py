@@ -35,6 +35,7 @@ class ZaboUser(AbstractBaseUser, PermissionsMixin):
     objects = ZaboUserManager()
 
     email = models.EmailField(blank=True, unique=True)
+    nickName = models.CharField(max_length=20, blank=True)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
     is_active = models.BooleanField(default=False)
@@ -44,3 +45,4 @@ class ZaboUser(AbstractBaseUser, PermissionsMixin):
     joined_date = models.DateField(auto_now_add=True)
     profile_image = models.FileField(upload_to='users/profile/')
     phone = models.CharField(max_length=45, blank=True)
+
