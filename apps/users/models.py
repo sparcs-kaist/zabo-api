@@ -46,3 +46,5 @@ class ZaboUser(AbstractBaseUser, PermissionsMixin):
     profile_image = models.FileField(upload_to='users/profile/')
     phone = models.CharField(max_length=45, blank=True)
 
+    def get_participating_zaboes(self):
+        pass
