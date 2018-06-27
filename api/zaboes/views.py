@@ -20,7 +20,7 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         This viewset automatically provides `list`, `create`, `retrieve`,
         `update` and `destroy` actions.
     """
-    # serializer_class = ZaboSerializer
+    serializer_class = ZaboSerializer
     queryset = Zabo.objects.all()
     filter_fields = ('category',)
     action_serializer_class = {
