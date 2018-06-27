@@ -4,6 +4,5 @@ from api.users.routers import zabouser_router
 
 
 urlpatterns = [
-    url(r'^',
-        include(zabouser_router.urls)),
+    url(r'^', include(zabouser_router.urls)),
 ]

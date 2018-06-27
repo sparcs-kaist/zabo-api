@@ -3,26 +3,26 @@ from rest_framework.routers import DefaultRouter, SimpleRouter
 
 from api.zaboes.views import ZaboViewSet, CommentViewSet, RecommentViewSet, PosterViewSet
 
-router = SimpleRouter()
+zabo_router = SimpleRouter()
 
-router.register(
+zabo_router.register(
     prefix=r'zaboes',
     viewset=ZaboViewSet,
 )
 
 
-router.register(
+zabo_router.register(
     prefix=r'posters',
     viewset=PosterViewSet,
 )
   
-router.register(
+zabo_router.register(
     prefix=r'comments',
     viewset=CommentViewSet,
 )
 
 
-router.register(
+zabo_router.register(
     prefix=r'recomments',
     viewset=RecommentViewSet,
 )
