@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets
 from api.users import serializers
 from apps.users.models import ZaboUser
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -12,6 +13,7 @@ class UserViewSet(viewsets.ModelViewSet):
         `update` and `destroy` actions.
 
     """
+    permission_classes = (IsAuthenticated, )
     serializer_class = serializers.ZabouserSerializer
     queryset = ZaboUser.objects.all()
 
