@@ -12,6 +12,7 @@ from rest_framework import status
 #from zabo.common.permissions import IsAuthenticated
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from api.common.viewset import ActionAPIViewSet
+from rest_framework.decorators import action
 
 
 class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
@@ -76,6 +77,15 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    @action(methods=['get'], detail=False)
+    def created(self, request):
+        user = request.user
+        queryset = Zabo.objects.filter(founder=user).order_by('updated_time')
+        page = self.paginate_queryset(queryset)
+        serializer = ZaboListSerializer(page, many=True)
+        if page is not None:
+            return self.get_paginated_response(serializer.data)
+        return Response(serializer.data)
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
