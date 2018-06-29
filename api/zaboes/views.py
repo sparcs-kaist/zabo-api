@@ -134,3 +134,9 @@ class RecommentViewSet(viewsets.ModelViewSet):
 class PosterViewSet(viewsets.ModelViewSet):
     serializer_class = PosterSerializer
     queryset = Poster.objects.all()
+
+class LikeViewSet(viewsets.ModelViewSet):
+    serializer_class = LikeSerializer
+    queryset = Like.objects.all()
+
+    #modef filter_queryset(self, request, queryset):

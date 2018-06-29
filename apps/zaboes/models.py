@@ -49,6 +49,11 @@ class Zabo(models.Model):
     is_deleted = models.BooleanField(default=False)
     is_validated = models.BooleanField(default=False)  # 관리자에게 승인받았는지 여부.
 
+    @property
+    def like_count(self):
+        return self.likes.all().count();
+
+
 
 class Poster(models.Model):
     zabo = models.ForeignKey(
@@ -125,3 +130,18 @@ class Participate(models.Model):
     )
     is_paid = models.BooleanField(default=False)
     is_approved = models.BooleanField(default=False)
+
+class Like(models.Model):
+    class Meta:
+        unique_together = (('zabo', 'user'),)
+
+    zabo = models.ForeignKey(
+        Zabo,
+        on_delete=models.CASCADE,
+        related_name="likes",
+    )
+    user = models.ForeignKey(
+        ZaboUser,
+        on_delete=models.CASCADE,
+    )
+    created_time = models.DateTimeField(auto_now_add=True)

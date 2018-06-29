@@ -1,7 +1,8 @@
 from django.apps import apps as django_apps
 from rest_framework import serializers
-from apps.zaboes.models import Zabo, Timeslot, Comment, Recomment, Participate, Poster
+from apps.zaboes.models import Zabo, Timeslot, Comment, Recomment, Participate, Poster, Like
 from django.conf import settings
+
 import json
 
 class PosterSerializer(serializers.ModelSerializer):
@@ -14,6 +15,9 @@ class PosterSerializer(serializers.ModelSerializer):
             'image',
             'image_thumbnail',
         )
+
+
+
 
 
 class TimeslotSerializer(serializers.ModelSerializer):
@@ -69,6 +73,7 @@ class CommentSerializer(serializers.ModelSerializer):
         )
 
 
+
 class ZaboSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
     posters = PosterSerializer(many=True, read_only=True)
@@ -89,8 +94,9 @@ class ZaboSerializer(serializers.ModelSerializer):
             'limit',
             'posters',
             'comments',
-            'timeslots'
-        )
+            'timeslots',
+            'like_count',
+            )
         read_only_fields = (
             'created_time',
             'updated_time',
@@ -109,6 +115,7 @@ class ZaboListSerializer(serializers.ModelSerializer):
             'posters',
             'created_time',
             'updated_time',
+            'like_count'
             # 쉽게 search, filter 결과 확인하려고 추가해 놓은 field
             'title',
             'content',
@@ -135,6 +142,7 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
             'payment',
             'timeslots',
             'deadline',
+            'posters',
         )
 
     def to_internal_value(self, data):
@@ -154,3 +162,12 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
             for timeslot_data in timeslots_data:
                 Timeslot.objects.create(zabo=zabo, **timeslot_data)
         return zabo;
+
+
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = (
+            'zabo',
+            'user',
+        )
