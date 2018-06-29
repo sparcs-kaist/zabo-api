@@ -2,7 +2,8 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import viewsets
 from apps.zaboes.models import *
-from api.zaboes.serializers import ZaboSerializer, ZaboListSerializer, CommentSerializer, RecommentSerializer, PosterSerializer, ZaboCreateSerializer
+from api.zaboes.serializers import ZaboSerializer, ZaboListSerializer, CommentSerializer,\
+    RecommentSerializer, PosterSerializer, ZaboCreateSerializer, LikeSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from zabo.common.permissions import IsOwnerOrReadOnly
@@ -29,7 +30,6 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         'retrieve': ZaboSerializer,
     }
 
-    #permission_classes = (AllowAny, )
     permission_classes = (IsAuthenticated, )
 
     def list(self, request):
@@ -105,8 +105,6 @@ class CommentViewSet(viewsets.ModelViewSet):
             zabo=zabo
         )
 
-
-
 class RecommentViewSet(viewsets.ModelViewSet):
     serializer_class = RecommentSerializer
     queryset = Recomment.objects.all()
@@ -128,3 +126,9 @@ class RecommentViewSet(viewsets.ModelViewSet):
 class PosterViewSet(viewsets.ModelViewSet):
     serializer_class = PosterSerializer
     queryset = Poster.objects.all()
+
+class LikeViewSet(viewsets.ModelViewSet):
+    serializer_class = LikeSerializer
+    queryset = Like.objects.all()
+
+    #modef filter_queryset(self, request, queryset):

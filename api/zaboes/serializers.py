@@ -1,10 +1,7 @@
 from django.apps import apps as django_apps
 from rest_framework import serializers
-from apps.zaboes.models import Zabo, Timeslot, Comment, Recomment, Participate, Poster
+from apps.zaboes.models import Zabo, Timeslot, Comment, Recomment, Participate, Poster, Like
 from django.conf import settings
-
-
-
 
 class PosterSerializer(serializers.ModelSerializer):
     class Meta:
@@ -15,15 +12,10 @@ class PosterSerializer(serializers.ModelSerializer):
         )
 
 
-
-
-
 class TimeslotSerializer(serializers.ModelSerializer):
     class Meta:
         model = Timeslot
         fields = ('content', 'start_time', 'end_time')
-
-
 
 
 class RecommentSerializer(serializers.ModelSerializer):
@@ -34,6 +26,7 @@ class RecommentSerializer(serializers.ModelSerializer):
             'created_time',
             'updated_time',
         )
+
 
 class CommentSerializer(serializers.ModelSerializer):
     recomments = RecommentSerializer(many=True, read_only=True)
@@ -57,11 +50,11 @@ class CommentSerializer(serializers.ModelSerializer):
         )
 
 
-
 class ZaboSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
     posters = PosterSerializer(many=True, read_only=True)
     timeslots = TimeslotSerializer(many=True, read_only=True)
+    #like_count =serializers.SerializerMethodField()
 
     class Meta:
         model = Zabo
@@ -76,8 +69,9 @@ class ZaboSerializer(serializers.ModelSerializer):
             'updated_time',
             'limit',
             'posters',
-             'comments',
-             'timeslots'
+            'comments',
+            'timeslots',
+            'like_count',
             )
         read_only_fields = (
             'created_time',
@@ -97,6 +91,7 @@ class ZaboListSerializer(serializers.ModelSerializer):
             'posters',
             'created_time',
             'updated_time',
+            'like_count'
         )
         read_only_fields = (
             'created_time',
@@ -120,6 +115,7 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
             'timeslots',
             'deadline',
             'posters',
+            #'like_count'
         )
 
     def create(self, validated_data):
@@ -131,4 +127,14 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
 
         for poster_data in posters_data:
             Poster.objects.create(zabo=zabo, **poster_data)
+
         return zabo;
+
+
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = (
+            'zabo',
+            'user',
+        )
