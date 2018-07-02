@@ -1,5 +1,7 @@
 from django.apps import apps as django_apps
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
+
 from apps.zaboes.models import Zabo, Timeslot, Comment, Recomment, Participate, Poster, Like
 from django.conf import settings
 
@@ -134,7 +136,10 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
-        fields = (
-            'zabo',
-            'user',
-        )
+        fields = '__all__'
+        validators = [
+            UniqueTogetherValidator(
+                queryset=model.objects.all(),
+                fields=('zabo', 'user')
+            )
+        ]

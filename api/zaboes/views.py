@@ -131,4 +131,16 @@ class LikeViewSet(viewsets.ModelViewSet):
     serializer_class = LikeSerializer
     queryset = Like.objects.all()
 
-    #modef filter_queryset(self, request, queryset):
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        newdata = request.data.copy()
+        newdata['user'] = user.id
+
+        serializer = self.get_serializer(data=newdata)
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
