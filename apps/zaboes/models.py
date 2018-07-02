@@ -26,6 +26,7 @@ class Zabo(models.Model):
         ('Z', 'Paid by zabo'),
         ('A', 'Payment on account')
     )
+
     founder = models.ForeignKey(
         ZaboUser, on_delete=models.CASCADE,
     )

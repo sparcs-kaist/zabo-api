@@ -19,7 +19,22 @@ class PosterSerializer(serializers.ModelSerializer):
 class TimeslotSerializer(serializers.ModelSerializer):
     class Meta:
         model = Timeslot
-        fields = ('content', 'start_time', 'end_time')
+        fields = (
+            'content',
+            'start_time',
+            'end_time'
+        )
+
+
+class TimeSlotCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Poster
+        fields = (
+            'zabo',
+            'content',
+            'start_time',
+            'end_time'
+        )
 
 
 class RecommentSerializer(serializers.ModelSerializer):
@@ -107,7 +122,6 @@ class ZaboListSerializer(serializers.ModelSerializer):
 
 
 class ZaboCreateSerializer(serializers.ModelSerializer):
-    posters = PosterSerializer(many=True, )
     timeslots = TimeslotSerializer(many=True)
 
     class Meta:
@@ -121,16 +135,13 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
             'payment',
             'timeslots',
             'deadline',
-            'posters',
         )
 
     def create(self, validated_data):
-        timeslots_data = validated_data.pop('timeslots')
-        posters_data = validated_data.pop('posters')
-        zabo = Zabo.objects.create(**validated_data)
-        for timeslot_data in timeslots_data:
-            Timeslot.objects.create(zabo=zabo, **timeslot_data)
 
-        for poster_data in posters_data:
-            Poster.objects.create(zabo=zabo, **poster_data)
+        timeslots_data = validated_data.pop('timeslots', None)
+        zabo = Zabo.objects.create(**validated_data)
+        if timeslots_data:
+            for timeslot_data in timeslots_data:
+                Timeslot.objects.create(zabo=zabo, **timeslot_data)
         return zabo;
