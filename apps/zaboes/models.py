@@ -131,10 +131,8 @@ class Participate(models.Model):
     is_paid = models.BooleanField(default=False)
     is_approved = models.BooleanField(default=False)
 
-class Like(models.Model):
-    class Meta:
-        unique_together = (('zabo', 'user'),)
 
+class Like(models.Model):
     zabo = models.ForeignKey(
         Zabo,
         on_delete=models.CASCADE,
@@ -143,5 +141,9 @@ class Like(models.Model):
     user = models.ForeignKey(
         ZaboUser,
         on_delete=models.CASCADE,
+        default=None,
     )
     created_time = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('zabo', 'user')
