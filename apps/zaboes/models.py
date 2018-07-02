@@ -28,6 +28,7 @@ class Zabo(models.Model):
     founder = models.ForeignKey(
         ZaboUser, on_delete=models.CASCADE,
     )
+    title = models.CharField(max_length=50, default="Title")
     location = models.CharField(max_length=50)
     content = models.TextField(blank=True, null=True)
     category = models.CharField(

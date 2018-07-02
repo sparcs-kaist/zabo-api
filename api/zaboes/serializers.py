@@ -67,6 +67,7 @@ class ZaboSerializer(serializers.ModelSerializer):
         model = Zabo
         fields = (
             'founder',
+            'title',
             'location',
             'content',
             'category',
@@ -76,8 +77,8 @@ class ZaboSerializer(serializers.ModelSerializer):
             'updated_time',
             'limit',
             'posters',
-             'comments',
-             'timeslots'
+            'comments',
+            'timeslots'
             )
         read_only_fields = (
             'created_time',
@@ -112,6 +113,7 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Zabo
         fields = (
+            'title',
             'location',
             'content',
             'category',
