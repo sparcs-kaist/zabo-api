@@ -28,6 +28,7 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
     filter_backends = (DjangoFilterBackend, SearchFilter)
     filter_fields = ('category', 'apply', 'payment',)
     search_fields = ('title', 'content', 'location',)
+    
     action_serializer_class = {
         'create': ZaboCreateSerializer,
         'list': ZaboListSerializer,
