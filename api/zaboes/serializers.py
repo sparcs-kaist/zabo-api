@@ -2,7 +2,7 @@ from django.apps import apps as django_apps
 from rest_framework import serializers
 from apps.zaboes.models import Zabo, Timeslot, Comment, Recomment, Participate, Poster
 from django.conf import settings
-
+import json
 
 class PosterSerializer(serializers.ModelSerializer):
     image_thumbnail = serializers.ImageField(read_only=True)
@@ -136,6 +136,15 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
             'timeslots',
             'deadline',
         )
+
+    def to_internal_value(self, data):
+        instance = super(ZaboCreateSerializer, self).to_internal_value(data)
+        if "timeslots" in data:
+            # instance["id"] = 10  # That's sketchy though
+            timeslot_str_data = data["timeslots"]
+            timeslot_json = json.loads(timeslot_str_data)
+            instance["timeslots"] = timeslot_json
+        return instance
 
     def create(self, validated_data):
 
