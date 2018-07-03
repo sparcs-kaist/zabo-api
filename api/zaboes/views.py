@@ -29,8 +29,8 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         'retrieve': ZaboSerializer,
     }
 
-    #permission_classes = (AllowAny, )
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (AllowAny, )
+    #permission_classes = (IsAuthenticated, )
 
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
