@@ -14,7 +14,7 @@ INSTALLED_APPS = [
     'apps.users',
     'apps.zaboes',
     'rest_framework_swagger',
-    'corsheaders', #django-cors-headers
+    'corsheaders',  # django-cors-headers
 ]
 
 MIDDLEWARE = [
@@ -29,7 +29,6 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'zabo.urls'
-
 
 TEMPLATES = [
     {
@@ -49,7 +48,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'zabo.wsgi.application'
 
-INTERNAL_IPS = ('127.0.0.1', )
+INTERNAL_IPS = ('127.0.0.1',)
 
 ALLOWED_HOSTS = ["http://localhost:8080"]
 

@@ -39,4 +39,3 @@ JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER':
         'zabo.common.utils.jwt_response_payload_handler'
 }
-

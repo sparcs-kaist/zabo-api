@@ -6,6 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+
 # Create your views here.
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -13,7 +14,7 @@ class UserViewSet(viewsets.ModelViewSet):
         `update` and `destroy` actions.
 
     """
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticated,)
     serializer_class = serializers.ZabouserSerializer
     queryset = ZaboUser.objects.all()
 
@@ -22,4 +23,3 @@ class UserViewSet(viewsets.ModelViewSet):
         user = request.user
         serializer = self.get_serializer(user)
         return Response(serializer.data)
-

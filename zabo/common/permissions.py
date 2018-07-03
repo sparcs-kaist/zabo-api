@@ -15,9 +15,10 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
         # Write permissions are only allowed to the owner
         return obj.owner == request.user
 
+
 class IsAuthenticated(permissions.IsAuthenticated):
 
     def has_permission(self, request, view):
         if request.method == 'OPTIONS':
             return True
-        return super(IsAuthenticated, self).has_permission(request,view)
+        return super(IsAuthenticated, self).has_permission(request, view)

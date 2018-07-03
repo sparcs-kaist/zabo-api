@@ -4,8 +4,6 @@ from apps.zaboes.models import Zabo, Timeslot, Comment, Recomment, Participate, 
 from django.conf import settings
 
 
-
-
 class PosterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Poster
@@ -15,15 +13,10 @@ class PosterSerializer(serializers.ModelSerializer):
         )
 
 
-
-
-
 class TimeslotSerializer(serializers.ModelSerializer):
     class Meta:
         model = Timeslot
         fields = ('content', 'start_time', 'end_time')
-
-
 
 
 class RecommentSerializer(serializers.ModelSerializer):
@@ -34,6 +27,7 @@ class RecommentSerializer(serializers.ModelSerializer):
             'created_time',
             'updated_time',
         )
+
 
 class CommentSerializer(serializers.ModelSerializer):
     recomments = RecommentSerializer(many=True, read_only=True)
@@ -57,7 +51,6 @@ class CommentSerializer(serializers.ModelSerializer):
         )
 
 
-
 class ZaboSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
     posters = PosterSerializer(many=True, read_only=True)
@@ -79,7 +72,7 @@ class ZaboSerializer(serializers.ModelSerializer):
             'posters',
             'comments',
             'timeslots'
-            )
+        )
         read_only_fields = (
             'created_time',
             'updated_time',

@@ -1,7 +1,8 @@
 from rest_framework import filters
 from apps.zaboes.models import Zabo
 
-#작성 중...
+
+# 작성 중...
 class ArticleFilter(filters.FilterSet):
     class Meta:
         model = Zabo
@@ -33,4 +34,3 @@ class ArticleFilter(filters.FilterSet):
                 'exact',
             ],
         }
-

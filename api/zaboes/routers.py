@@ -10,20 +10,17 @@ zabo_router.register(
     viewset=ZaboViewSet,
 )
 
-
 zabo_router.register(
     prefix=r'posters',
     viewset=PosterViewSet,
 )
-  
+
 zabo_router.register(
     prefix=r'comments',
     viewset=CommentViewSet,
 )
 
-
 zabo_router.register(
     prefix=r'recomments',
     viewset=RecommentViewSet,
 )
-
