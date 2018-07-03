@@ -25,7 +25,7 @@ from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify
 schema_view = get_schema_view(title='Pastebin API')
 swagger_view = get_swagger_view(title="Pastebian API")
 
-urlpatterns = (
+urlpatterns = [
 
                   url(r'^', include('api.urls')),
                   url(r'^api-token-auth/', obtain_jwt_token),
@@ -34,7 +34,7 @@ urlpatterns = (
                   url(r'^schema/$', schema_view),
                   url(r'^swagger/$', swagger_view),
                   url(r'^admin/', admin.site.urls),
-              ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL,
