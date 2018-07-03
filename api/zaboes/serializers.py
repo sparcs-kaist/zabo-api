@@ -91,7 +91,7 @@ class ZaboListSerializer(serializers.ModelSerializer):
             'posters',
             'created_time',
             'updated_time',
-            # 쉽게 확인하려고 추가해 놓은 field
+            # 쉽게 search, filter 결과 확인하려고 추가해 놓은 field
             'title',
             'content',
             'location',
