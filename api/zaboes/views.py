@@ -130,3 +130,33 @@ class RecommentViewSet(viewsets.ModelViewSet):
 class PosterViewSet(viewsets.ModelViewSet):
     serializer_class = PosterSerializer
     queryset = Poster.objects.all()
+
+
+class LikeViewSet(viewsets.ModelViewSet):
+    serializer_class = LikeSerializer
+    queryset = Like.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        newdata = request.data.copy()
+        newdata['user'] = user.id
+
+        serializer = self.get_serializer(data=newdata)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    @action(methods=['delete'], detail=False)
+    def dislike(self, request):
+        user_id = int(request.user.id)
+        print("user_id: " + str(user_id))
+        zabo_id = int(request.data["zabo"])
+        print("zabo_id: " + str(zabo_id))
+        instance = Like.objects.filter(user=user_id).filter(zabo=zabo_id)
+        self.perform_destroy(instance)
+        return Response({'Message': 'You have successfully dislike'}, status=status.HTTP_204_NO_CONTENT)
+
+    def perform_destroy(self, instance):
+        instance.delete()

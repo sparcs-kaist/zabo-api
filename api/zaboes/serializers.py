@@ -1,8 +1,11 @@
 from django.apps import apps as django_apps
 from rest_framework import serializers
-from apps.zaboes.models import Zabo, Timeslot, Comment, Recomment, Participate, Poster
+from rest_framework.validators import UniqueTogetherValidator
+from apps.zaboes.models import Zabo, Timeslot, Comment, Recomment, Participate, Poster, Like
 from django.conf import settings
+
 import json
+
 
 class PosterSerializer(serializers.ModelSerializer):
     image_thumbnail = serializers.ImageField(read_only=True)
@@ -74,6 +77,8 @@ class ZaboSerializer(serializers.ModelSerializer):
     posters = PosterSerializer(many=True, read_only=True)
     timeslots = TimeslotSerializer(many=True, read_only=True)
 
+    # like_count =serializers.SerializerMethodField()
+
     class Meta:
         model = Zabo
         fields = (
@@ -89,7 +94,8 @@ class ZaboSerializer(serializers.ModelSerializer):
             'limit',
             'posters',
             'comments',
-            'timeslots'
+            'timeslots',
+            'like_count',
         )
         read_only_fields = (
             'created_time',
@@ -109,6 +115,7 @@ class ZaboListSerializer(serializers.ModelSerializer):
             'posters',
             'created_time',
             'updated_time',
+            'like_count',
             # 쉽게 search, filter 결과 확인하려고 추가해 놓은 field
             'title',
             'content',
@@ -135,6 +142,8 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
             'payment',
             'timeslots',
             'deadline',
+            'posters',
+            # 'like_count'
         )
 
     def to_internal_value(self, data):
@@ -154,3 +163,20 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
             for timeslot_data in timeslots_data:
                 Timeslot.objects.create(zabo=zabo, **timeslot_data)
         return zabo;
+
+        for poster_data in posters_data:
+            Poster.objects.create(zabo=zabo, **poster_data)
+
+        return zabo;
+
+
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = '__all__'
+        validators = [
+            UniqueTogetherValidator(
+                queryset=model.objects.all(),
+                fields=('zabo', 'user')
+            )
+        ]
