@@ -31,13 +31,6 @@ class UserViewSet(viewsets.ModelViewSet):
         user.follow_others(nickname)
         return Response({'Message': 'You have successfully follow'}, status=status.HTTP_201_CREATED)
 
-    @action(methods=["post"], detail=False)
-    def followOther(self, request):
-        user = request.user
-        nickname = request.data["nickname"]
-        user.follow_others(nickname)
-        return Response({'Message': 'You have successfully follow'}, status=status.HTTP_201_CREATED)
-
     @action(methods=['post', 'delete'], detail=False)
     def unfollowOther(self, request):
         user = request.user
