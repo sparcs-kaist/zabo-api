@@ -8,16 +8,12 @@ from api.zaboes.serializers import *
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from zabo.common.permissions import IsOwnerOrReadOnly
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework import status
-# Create your views here.
-# from zabo.common.permissions import IsAuthenticated
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from api.common.viewset import ActionAPIViewSet
 from rest_framework.permissions import IsAuthenticated
-from PIL import Image
 from rest_framework.decorators import action
-import json
+
 
 
 # Create your views here.

@@ -5,7 +5,7 @@ from apps.users.models import ZaboUser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
+from rest_framework import status
 
 # Create your views here.
 class UserViewSet(viewsets.ModelViewSet):
@@ -23,3 +23,17 @@ class UserViewSet(viewsets.ModelViewSet):
         user = request.user
         serializer = self.get_serializer(user)
         return Response(serializer.data)
+
+    @action(methods=["post"], detail=False)
+    def followOther(self, request):
+        user = request.user
+        nickname = request.data["nickname"]
+        user.follow_others(nickname)
+        return Response({'Message': 'You have successfully follow'}, status=status.HTTP_201_CREATED)
+
+    @action(methods=['post', 'delete'], detail=False)
+    def unfollowOther(self, request):
+        user = request.user
+        nickname = request.data["nickname"]
+        user.unfollow_others(nickname)
+        return Response({'Message': 'You have successfully unfollow'}, status=status.HTTP_201_CREATED)

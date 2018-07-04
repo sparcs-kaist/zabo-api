@@ -1,8 +1,8 @@
 import uuid
 
-from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.shortcuts import get_object_or_404
 
 
 class ZaboUserManager(BaseUserManager):
@@ -35,7 +35,7 @@ class ZaboUser(AbstractBaseUser, PermissionsMixin):
     objects = ZaboUserManager()
 
     email = models.EmailField(blank=True, unique=True)
-    nickName = models.CharField(max_length=20, blank=True)
+    nickName = models.CharField(max_length=20, blank=True, unique=True)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
     is_active = models.BooleanField(default=False)
@@ -45,6 +45,17 @@ class ZaboUser(AbstractBaseUser, PermissionsMixin):
     joined_date = models.DateField(auto_now_add=True)
     profile_image = models.FileField(upload_to='users/profile/')
     phone = models.CharField(max_length=45, blank=True)
+    following = models.ManyToManyField("self", blank=True)
 
     def get_participating_zaboes(self):
         pass
+
+    def follow_other(self, nickname):
+        following_user = get_object_or_404(ZaboUser, nickName=nickname)
+        self.following.add(following_user)
+        self.save()
+
+    def unfollow_other(self, nickname):
+        following_user = get_object_or_404(ZaboUser, nickName=nickname)
+        self.following.remove(following_user)
+        self.save()
