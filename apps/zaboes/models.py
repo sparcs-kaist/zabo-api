@@ -51,7 +51,7 @@ class Zabo(models.Model):
 
     @property
     def like_count(self):
-        return self.likes.all().count();
+        return self.likes.all().count()
 
 
 
