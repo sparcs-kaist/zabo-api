@@ -55,6 +55,7 @@ class Zabo(models.Model):
 
 
 
+
 class Poster(models.Model):
     zabo = models.ForeignKey(
         Zabo,

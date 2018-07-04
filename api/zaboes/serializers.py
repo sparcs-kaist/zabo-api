@@ -1,11 +1,11 @@
 from django.apps import apps as django_apps
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-
 from apps.zaboes.models import Zabo, Timeslot, Comment, Recomment, Participate, Poster, Like
 from django.conf import settings
 
 import json
+
 
 class PosterSerializer(serializers.ModelSerializer):
     image_thumbnail = serializers.ImageField(read_only=True)
@@ -17,9 +17,6 @@ class PosterSerializer(serializers.ModelSerializer):
             'image',
             'image_thumbnail',
         )
-
-
-
 
 
 class TimeslotSerializer(serializers.ModelSerializer):
@@ -75,11 +72,12 @@ class CommentSerializer(serializers.ModelSerializer):
         )
 
 
-
 class ZaboSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
     posters = PosterSerializer(many=True, read_only=True)
     timeslots = TimeslotSerializer(many=True, read_only=True)
+
+    # like_count =serializers.SerializerMethodField()
 
     class Meta:
         model = Zabo
@@ -98,7 +96,7 @@ class ZaboSerializer(serializers.ModelSerializer):
             'comments',
             'timeslots',
             'like_count',
-            )
+        )
         read_only_fields = (
             'created_time',
             'updated_time',
@@ -145,6 +143,7 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
             'timeslots',
             'deadline',
             'posters',
+            # 'like_count'
         )
 
     def to_internal_value(self, data):
@@ -163,6 +162,11 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
         if timeslots_data:
             for timeslot_data in timeslots_data:
                 Timeslot.objects.create(zabo=zabo, **timeslot_data)
+        return zabo;
+
+        for poster_data in posters_data:
+            Poster.objects.create(zabo=zabo, **poster_data)
+
         return zabo;
 
 

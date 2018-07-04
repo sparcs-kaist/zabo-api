@@ -135,6 +135,7 @@ class PosterViewSet(viewsets.ModelViewSet):
     serializer_class = PosterSerializer
     queryset = Poster.objects.all()
 
+
 class LikeViewSet(viewsets.ModelViewSet):
     serializer_class = LikeSerializer
     queryset = Like.objects.all()
@@ -163,4 +164,3 @@ class LikeViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, instance):
         instance.delete()
-
