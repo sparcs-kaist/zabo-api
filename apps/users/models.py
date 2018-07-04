@@ -50,12 +50,12 @@ class ZaboUser(AbstractBaseUser, PermissionsMixin):
     def get_participating_zaboes(self):
         pass
 
-    def follow_others(self, nickname):
+    def follow_other(self, nickname):
         following_user = get_object_or_404(ZaboUser, nickName=nickname)
         self.following.add(following_user)
         self.save()
 
-    def unfollow_others(self, nickname):
+    def unfollow_other(self, nickname):
         following_user = get_object_or_404(ZaboUser, nickName=nickname)
         self.following.remove(following_user)
         self.save()
