@@ -8,16 +8,12 @@ from api.zaboes.serializers import *
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from zabo.common.permissions import IsOwnerOrReadOnly
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 from rest_framework import status
-# Create your views here.
-# from zabo.common.permissions import IsAuthenticated
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from api.common.viewset import ActionAPIViewSet
 from rest_framework.permissions import IsAuthenticated
-from PIL import Image
 from rest_framework.decorators import action
-import json
+
 
 # Create your views here.
 
@@ -51,7 +47,6 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
 
-
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -70,9 +65,6 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         for key, file in self.request.FILES.items():
             instance = Poster(zabo=zabo, image=file)
             instance.save()
-
-
-
 
     def retrieve(self, request, pk=None):
         zabo = get_object_or_404(self.queryset, pk=pk)

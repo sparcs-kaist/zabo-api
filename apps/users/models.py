@@ -1,8 +1,8 @@
 import uuid
 
-from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.shortcuts import get_object_or_404
 
 
 class ZaboUserManager(BaseUserManager):
@@ -49,3 +49,8 @@ class ZaboUser(AbstractBaseUser, PermissionsMixin):
 
     def get_participating_zaboes(self):
         pass
+
+    def follow_others(self, nickname):
+        following_user = get_object_or_404(ZaboUser, nickName=nickname)
+        self.following.add(following_user)
+        self.save()
