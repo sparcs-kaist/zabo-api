@@ -54,3 +54,8 @@ class ZaboUser(AbstractBaseUser, PermissionsMixin):
         following_user = get_object_or_404(ZaboUser, nickName=nickname)
         self.following.add(following_user)
         self.save()
+
+    def unfollow_others(self, nickname):
+        following_user = get_object_or_404(ZaboUser, nickName=nickname)
+        self.following.remove(following_user)
+        self.save()
