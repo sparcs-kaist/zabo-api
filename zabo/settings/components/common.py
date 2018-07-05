@@ -13,6 +13,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'apps.users',
     'apps.zaboes',
+    'apps.common',
+    'apps.notifications',
     'imagekit',
     'rest_framework_swagger',
     'corsheaders',  # django-cors-headers
