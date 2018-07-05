@@ -6,11 +6,11 @@ from apps.zaboes.models import Zabo, Comment, Poster, Recomment, Timeslot, Parti
 # Register your models here.
 class ZaboAdmin(admin.ModelAdmin):
     list_per_page = 15
+
     list_display = (
-        'id', 'title', 'content', 'founder', 'location', 'created_time',
+         'id', 'title', 'content', 'founder', 'location', 'created_time',
     )
     search_fields = ('content',)
-    fields = [Zabo.content, Zabo.APPLY]
 
 
 class PosterAdmin(admin.ModelAdmin):
