@@ -1,7 +1,6 @@
 from django.apps import apps as django_apps
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-from api.users.serializers import ZabouserListSerializer
 from apps.zaboes.models import Zabo, Timeslot, Comment, Recomment, Participate, Poster, Like
 from django.conf import settings
 

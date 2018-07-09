@@ -13,7 +13,6 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from api.common.viewset import ActionAPIViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
-from itertools import chain
 
 
 
