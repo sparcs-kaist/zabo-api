@@ -7,6 +7,7 @@ from apps.users.models import ZaboUser
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
+
 class Zabo(models.Model):
     CATEGORY = (
         ('R', 'Recruting'),
@@ -54,8 +55,6 @@ class Zabo(models.Model):
         return self.likes.all().count()
 
 
-
-
 class Poster(models.Model):
     zabo = models.ForeignKey(
         Zabo,
@@ -66,11 +65,10 @@ class Poster(models.Model):
     )
     image = models.FileField(upload_to='posters/')
     image_thumbnail = ImageSpecField(source='image',
-                                     processors=[ResizeToFill(600,800)],
+                                     processors=[ResizeToFill(600, 800)],
                                      format='JPEG',
-                                     options={'quality':60},
+                                     options={'quality': 60},
                                      )
-
 
 
 class Timeslot(models.Model):
