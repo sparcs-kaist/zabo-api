@@ -20,6 +20,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = ZaboUser.objects.all()
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     search_fields = ('nickName', 'email')
+    # 나중에 검색 결과 순서에 대해 이야기 해보아야 함
     ordering_fields = ('nickName', 'email', 'joined_date')
 
     def list(self, request):

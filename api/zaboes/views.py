@@ -29,6 +29,7 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     filter_fields = ('category', 'apply', 'payment',)
     search_fields = ('title', 'content', 'location',)
+    # 나중에 검색 결과 순서에 대해 이야기 해보아야 함
     ordering_fields = ('title', 'like_count')
 
     action_serializer_class = {
