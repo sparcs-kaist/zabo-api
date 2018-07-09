@@ -1,8 +1,8 @@
-from apps.notifications.models import ZaboFollowingNotification, CommentFollowingNotification
+from apps.notifications.models import ZaboReactionNotification, CommentReactionNotification
 from apps.zaboes.models import Zabo, Comment, Recomment
 
 
-class FollowingNotificatinoHelper():
+class ReactionNotificatinoHelper():
 
     def __init__(self, From_user):
         self.From_user = From_user
@@ -15,24 +15,25 @@ class FollowingNotificatinoHelper():
 
     def notify_to_zaboUser(self, zabo, notifier):
         user = zabo.founder
-        if ZaboFollowingNotification.objects.filter(zabo=zabo).exists():
-            noti = ZaboFollowingNotification.objects.filter(zabo=zabo)
+        if ZaboReactionNotification.objects.filter(zabo=zabo).exists():
+            noti = ZaboReactionNotification.objects.filter(zabo=zabo)
             noti.followings.add(notifier)
             noti.save()
         else:
             content = zabo.content[:20]
-            instance = ZaboFollowingNotification(zabo=zabo, to=user, content=content)
+            instance = ZaboReactionNotification(zabo=zabo, to=user, content=content)
             instance.followings.add(notifier)
             instance.save()
 
     def notify_to_commentUser(self, comment, notifier):
         user = comment.author
-        if CommentFollowingNotification.objects.filter(comment=comment).exists():
-            noti = ZaboFollowingNotification.objects.filter(comment=comment)
+        if CommentReactionNotification.objects.filter(comment=comment).exists():
+            noti = CommentReactionNotification.objects.filter(comment=comment)
             noti.followings.add(notifier)
             noti.save()
         else:
             content = comment.content[:20]
-            instance = ZaboFollowingNotification(comment=comment, to=user, content=content)
+            instance = CommentReactionNotification(comment=comment, to=user, content=content)
             instance.followings.add(notifier)
             instance.save()
+

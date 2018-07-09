@@ -15,7 +15,28 @@ class BaseNotification(TimeStampedModel):
     class Meta:
         abstract = True
 
-class FromUserNotification(BaseNotification):
+class ReactionNotification(BaseNotification):
+    reactors = models.ManyToManyField(ZaboUser)
+
+    @property
+    def reactors_count(self):
+        return self.followings.count()
+
+    class Meta:
+        abstarct = True
+
+class ZaboReactionNotification(ReactionNotification):
+    zabo = From = models.ForeignKey(
+        Zabo, on_delete=models.CASCADE,
+    )
+
+
+class CommentReactionNotification(ReactionNotification):
+    comment = From = models.ForeignKey(
+        Zabo, on_delete=models.CASCADE,
+    )
+
+class UserNotification(BaseNotification):
     From = models.ForeignKey(
         ZaboUser, on_delete=models.CASCADE,
     )
@@ -23,26 +44,6 @@ class FromUserNotification(BaseNotification):
     class Meta:
         abstarct = True
 
-class FollowingNotification(BaseNotification):
-    followings = models.ManyToManyField(ZaboUser)
-
-    @property
-    def followings_count(self):
-        return self.followings.count()
-
-    class Meta:
-        abstarct = True
-
-class ZaboFollowingNotification(FollowingNotification):
-    zabo = From = models.ForeignKey(
-        Zabo, on_delete=models.CASCADE,
-    )
-
-
-class CommentFollowingNotification(FollowingNotification):
-    comment = From = models.ForeignKey(
-        Zabo, on_delete=models.CASCADE,
-    )
 
 
 class AdminNotification(BaseNotification):
