@@ -26,25 +26,28 @@ class ReactionNotification(BaseNotification):
         abstarct = True
 
 class ZaboReactionNotification(ReactionNotification):
-    zabo = From = models.ForeignKey(
+    zabo = models.ForeignKey(
         Zabo, on_delete=models.CASCADE,
     )
 
 
 class CommentReactionNotification(ReactionNotification):
-    comment = From = models.ForeignKey(
+    comment = models.ForeignKey(
         Zabo, on_delete=models.CASCADE,
     )
 
-class UserNotification(BaseNotification):
-    From = models.ForeignKey(
+class FollowingNotification(BaseNotification):
+    following = models.ForeignKey(
         ZaboUser, on_delete=models.CASCADE,
     )
-
     class Meta:
         abstarct = True
 
 
+class ZabpFollowingNotification(BaseNotification):
+    zabo = models.ForeignKey(
+        Zabo, on_delete=models.CASCADE,
+    )
 
 class AdminNotification(BaseNotification):
     pass
