@@ -1,11 +1,13 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-from api.users import serializers
+from api.users.serializers import ZabouserSerializer, ZabouserListSerializer
 from apps.users.models import ZaboUser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
 
 # Create your views here.
 class UserViewSet(viewsets.ModelViewSet):
@@ -14,9 +16,20 @@ class UserViewSet(viewsets.ModelViewSet):
         `update` and `destroy` actions.
 
     """
-    permission_classes = (IsAuthenticated,)
-    serializer_class = serializers.ZabouserSerializer
+    serializer_class = ZabouserSerializer
     queryset = ZaboUser.objects.all()
+    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    search_fields = ('nickName', 'email')
+    ordering_fields = ('nickName', 'email', 'joined_date')
+
+    def list(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        serializer = ZabouserListSerializer(page, many=True)
+
+        if page is not None:
+            return self.get_paginated_response(serializer.data)
+        return Response(serializer.data)
 
     @action(methods=['get'], detail=False)
     def myInfo(self, request):

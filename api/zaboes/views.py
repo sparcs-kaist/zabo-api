@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework import viewsets
 from apps.zaboes.models import *
@@ -13,6 +13,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from api.common.viewset import ActionAPIViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
+from itertools import chain
 
 
 
@@ -25,9 +26,10 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
     """
     serializer_class = ZaboSerializer
     queryset = Zabo.objects.all()
-    filter_backends = (DjangoFilterBackend, SearchFilter)
+    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     filter_fields = ('category', 'apply', 'payment',)
     search_fields = ('title', 'content', 'location',)
+    ordering_fields = ('title', 'like_count')
 
     action_serializer_class = {
         'create': ZaboCreateSerializer,
