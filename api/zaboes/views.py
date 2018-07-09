@@ -15,7 +15,6 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 
 
-
 # Create your views here.
 
 class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):

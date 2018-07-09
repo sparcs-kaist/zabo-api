@@ -9,6 +9,7 @@ from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 
+
 # Create your views here.
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -26,7 +27,9 @@ class UserViewSet(viewsets.ModelViewSet):
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
-        serializer = ZabouserListSerializer(page, many=True)
+        serializer = ZabouserListSerializer(page, many=True, context={
+            'request': request,
+        })
 
         if page is not None:
             return self.get_paginated_response(serializer.data)
