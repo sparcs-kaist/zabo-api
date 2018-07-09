@@ -9,7 +9,6 @@ class BaseNotification(TimeStampedModel):
     to = models.ForeignKey(
         ZaboUser, on_delete=models.CASCADE,
     )
-    to_ink = models.URLField()
     content = models.CharField(blank=True)
 
     class Meta:
