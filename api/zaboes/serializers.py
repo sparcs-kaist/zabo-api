@@ -111,6 +111,7 @@ class ZaboSerializer(serializers.ModelSerializer):
 
 class ZaboListSerializer(serializers.ModelSerializer):
     posters = PosterSerializer(many=True, read_only=True)
+    founder = ZabouserListSerializer(read_only=True)
 
     class Meta:
         model = Zabo
