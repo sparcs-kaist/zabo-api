@@ -45,7 +45,7 @@ class ZaboUser(AbstractBaseUser, PermissionsMixin):
     joined_date = models.DateField(auto_now_add=True)
     profile_image = models.FileField(upload_to='users/profile/')
     phone = models.CharField(max_length=45, blank=True)
-    following = models.ManyToManyField("self", blank=True)
+    following = models.ManyToManyField("self", blank=True, related_name="follower", symmetrical = False)
 
     def get_participating_zaboes(self):
         pass

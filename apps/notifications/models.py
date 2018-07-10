@@ -43,14 +43,14 @@ class CommentReactionNotification(ReactionNotification):
 class FollowingNotification(BaseNotification):
     following = models.ForeignKey(
         ZaboUser, on_delete=models.CASCADE,
-        related_name="%(app_label)s_%(class)s_related",
-        related_query_name="%(app_label)s_%(class)ss",
+        related_name="%(app_label)s_%(class)s_related_following",
+        related_query_name="%(app_label)s_%(class)ss_following",
     )
     class Meta:
         abstract = True
 
 
-class ZaboFollowingNotification(BaseNotification):
+class ZaboFollowingNotification(FollowingNotification):
     zabo = models.ForeignKey(
         Zabo, on_delete=models.CASCADE,
         related_name="zabo_following",

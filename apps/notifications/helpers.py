@@ -20,7 +20,7 @@ class ReactionNotificatinoHelper():
 
         if ZaboReactionNotification.objects.filter(zabo=zabo).exists():
             noti = ZaboReactionNotification.objects.filter(zabo=zabo)
-            noti.followings.add(self.notifier)
+            noti.reactors.add(self.notifier)
             noti.save()
         else:
             content = zabo.content[:20]
@@ -29,7 +29,7 @@ class ReactionNotificatinoHelper():
             instance.reactors.add(self.notifier)
             instance.save()
 
-    def notify_to_commentUser(self, comment, notifier):
+    def notify_to_commentUser(self, comment):
         user = comment.author
         if self.notifier == user:
             return

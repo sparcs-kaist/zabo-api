@@ -68,7 +68,7 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
             instance.save()
 
         #make notification to followings
-        followers = zabo.founder.following_set.all()
+        followers = zabo.founder.follower.all()
         if followers.exists():
             for follower in followers.iterator():
                 FollowingNotificatinoHelper(notifier= zabo.founder, to=follower).notify_to_User(zabo)

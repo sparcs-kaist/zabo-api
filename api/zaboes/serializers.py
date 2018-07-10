@@ -142,14 +142,13 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
             'payment',
             'timeslots',
             'deadline',
-            'posters',
+            # 'posters',
             # 'like_count'
         )
 
     def to_internal_value(self, data):
         instance = super(ZaboCreateSerializer, self).to_internal_value(data)
         if "timeslots" in data:
-            # instance["id"] = 10  # That's sketchy though
             timeslot_str_data = data["timeslots"]
             timeslot_json = json.loads(timeslot_str_data)
             instance["timeslots"] = timeslot_json
