@@ -1,6 +1,8 @@
 from django.apps import apps as django_apps
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
+
+from api.users.serializers import ZabouserListSerializer
 from apps.zaboes.models import Zabo, Timeslot, Comment, Recomment, Participate, Poster, Like
 from django.conf import settings
 
@@ -41,6 +43,8 @@ class TimeSlotCreateSerializer(serializers.ModelSerializer):
 
 
 class RecommentSerializer(serializers.ModelSerializer):
+    author = ZabouserListSerializer(read_only=True)
+
     class Meta:
         model = Recomment
         fields = '__all__'
@@ -51,6 +55,7 @@ class RecommentSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    author = ZabouserListSerializer(read_only=True)
     recomments = RecommentSerializer(many=True, read_only=True)
 
     class Meta:
