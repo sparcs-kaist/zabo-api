@@ -13,6 +13,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from api.common.viewset import ActionAPIViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
+from apps.notifications.helpers import ReactionNotificatinoHelper, FollowingNotificatinoHelper
 
 
 
@@ -62,10 +63,17 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         )
 
         # save poster instance (can be more than one)
-
         for key, file in self.request.FILES.items():
             instance = Poster(zabo=zabo, image=file)
             instance.save()
+
+        #make notification to followings
+        followers = zabo.founder.following_set.all()
+        if followers.exists():
+            for follower in followers.iterator():
+                FollowingNotificatinoHelper(notifier= zabo.founder, to=follower).notify_to_User(zabo)
+
+
 
     def retrieve(self, request, pk=None):
         zabo = get_object_or_404(self.queryset, pk=pk)
@@ -102,11 +110,12 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         zabo_id = int(self.request.data["zabo"])
         zabo = get_object_or_404(Zabo.objects.all(), pk=zabo_id)
-
         serializer.save(
             author=self.request.user,
             zabo=zabo
         )
+        # Make notification to ZaboUser
+        ReactionNotificatinoHelper(self.request.user).notify_to_User(zabo)
 
 
 class RecommentViewSet(viewsets.ModelViewSet):
@@ -120,11 +129,12 @@ class RecommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         comment_id = int(self.request.data["comment"])
         comment = get_object_or_404(Comment.objects.all(), pk=comment_id)
-
         serializer.save(
             comment=comment,
             author=self.request.user,
         )
+        # Make notification to CommentUser
+        ReactionNotificatinoHelper(self.request.user).notify_to_User(comment)
 
 
 class PosterViewSet(viewsets.ModelViewSet):
@@ -140,23 +150,21 @@ class LikeViewSet(viewsets.ModelViewSet):
         user = request.user
         newdata = request.data.copy()
         newdata['user'] = user.id
-
         serializer = self.get_serializer(data=newdata)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
-
+        like = serializer.save()
+        ReactionNotificatinoHelper(user).notify_to_User(like.zabo)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     @action(methods=['delete'], detail=False)
     def dislike(self, request):
         user_id = int(request.user.id)
-        print("user_id: " + str(user_id))
         zabo_id = int(request.data["zabo"])
-        print("zabo_id: " + str(zabo_id))
         instance = Like.objects.filter(user=user_id).filter(zabo=zabo_id)
+        ReactionNotificatinoHelper(request.user).cancel_reaction(instance)
         self.perform_destroy(instance)
         return Response({'Message': 'You have successfully dislike'}, status=status.HTTP_204_NO_CONTENT)
 
     def perform_destroy(self, instance):
-        instance.delete()
+        return instance.delete()
