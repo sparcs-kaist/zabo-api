@@ -50,7 +50,7 @@ class FollowingNotification(BaseNotification):
         abstract = True
 
 
-class ZabpFollowingNotification(BaseNotification):
+class ZaboFollowingNotification(BaseNotification):
     zabo = models.ForeignKey(
         Zabo, on_delete=models.CASCADE,
         related_name="zabo_following",
