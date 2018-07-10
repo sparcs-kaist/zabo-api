@@ -15,6 +15,9 @@ class ReactionNotificatinoHelper():
 
     def notify_to_zaboUser(self, zabo):
         user = zabo.founder
+        if self.notifier == user:
+            return
+
         if ZaboReactionNotification.objects.filter(zabo=zabo).exists():
             noti = ZaboReactionNotification.objects.filter(zabo=zabo)
             noti.followings.add(self.notifier)
@@ -22,11 +25,15 @@ class ReactionNotificatinoHelper():
         else:
             content = zabo.content[:20]
             instance = ZaboReactionNotification(zabo=zabo, to=user, content=content)
+            instance.save()
             instance.reactors.add(self.notifier)
             instance.save()
 
     def notify_to_commentUser(self, comment, notifier):
         user = comment.author
+        if self.notifier == user:
+            return
+
         if CommentReactionNotification.objects.filter(comment=comment).exists():
             noti = CommentReactionNotification.objects.filter(comment=comment)
             noti.reactors.add(self.notifier)
@@ -34,6 +41,7 @@ class ReactionNotificatinoHelper():
         else:
             content = comment.content[:20]
             instance = CommentReactionNotification(comment=comment, to=user, content=content)
+            instance.save()
             instance.reactors.add(self.notifier)
             instance.save()
 
