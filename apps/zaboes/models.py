@@ -6,6 +6,7 @@ from django.db import models
 from apps.users.models import ZaboUser
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
+from django.utils import timezone
 
 
 class Zabo(models.Model):
@@ -46,13 +47,19 @@ class Zabo(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
     limit = models.IntegerField(default=1000)
-    deadline = models.DateTimeField
+    deadline = models.DateTimeField(editable=True, default=timezone.now())
     is_deleted = models.BooleanField(default=False)
     is_validated = models.BooleanField(default=False)  # 관리자에게 승인받았는지 여부.
 
     @property
     def like_count(self):
         return self.likes.all().count()
+
+    @property
+    def time_left(self):
+        current = timezone.now()
+        diff = self.deadline - current
+        return diff
 
 
 class Poster(models.Model):
