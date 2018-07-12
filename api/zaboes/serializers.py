@@ -101,6 +101,8 @@ class ZaboSerializer(serializers.ModelSerializer):
             'comments',
             'timeslots',
             'like_count',
+            'deadline',
+            'is_finished',
         )
         read_only_fields = (
             'created_time',
@@ -126,6 +128,9 @@ class ZaboListSerializer(serializers.ModelSerializer):
             'title',
             'content',
             'location',
+            'deadline',
+            'time_left',
+            'is_finished',
         )
         read_only_fields = (
             'created_time',
