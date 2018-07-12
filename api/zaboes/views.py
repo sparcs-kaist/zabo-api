@@ -86,7 +86,9 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         user = request.user
         queryset = Zabo.objects.filter(founder=user).order_by('updated_time')
         page = self.paginate_queryset(queryset)
-        serializer = ZaboListSerializer(page, many=True)
+        serializer = ZaboListSerializer(page, many=True, context={
+            'request': request,
+        })
         if page is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
@@ -96,7 +98,9 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         queryset = Zabo.objects.all()
         queryset = sorted(queryset, key=lambda zabo: (-zabo.like_count))
         page = self.paginate_queryset(queryset)
-        serializer = ZaboListSerializer(page, many=True)
+        serializer = ZaboListSerializer(page, many=True, context={
+            'request': request,
+        })
         if page is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
@@ -107,7 +111,9 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         queryset = (zabo for zabo in queryset if not zabo.is_finished)
         queryset = sorted(queryset, key=lambda zabo: (zabo.time_left))
         page = self.paginate_queryset(queryset)
-        serializer = ZaboListSerializer(page, many=True)
+        serializer = ZaboListSerializer(page, many=True, context={
+            'request': request,
+        })
         if page is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
