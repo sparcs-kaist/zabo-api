@@ -35,7 +35,7 @@ class Zabo(models.Model):
     location = models.CharField(max_length=50)
     content = models.TextField(blank=True, null=True)
     category = models.CharField(
-        max_length=1, choices=CATEGORY
+        max_length=1, choices=CATEGORY,
     )
     apply = models.CharField(
         max_length=1, choices=APPLY
