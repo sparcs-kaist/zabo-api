@@ -169,6 +169,14 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
         return zabo;
 
 
+class ZaboUrlSerializer(serializers.HyperlinkedModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name='zabo-detail', read_only=True)
+
+    class Meta:
+        model = Zabo
+        fields = ('id', 'url')
+
+
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like

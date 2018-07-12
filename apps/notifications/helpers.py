@@ -1,4 +1,5 @@
-from apps.notifications.models import ZaboReactionNotification, CommentReactionNotification, ZaboFollowingNotification
+from apps.notifications.models import ZaboReactionNotification, CommentReactionNotification, ZaboFollowingNotification, \
+    SomeoneFollowingNotification
 from apps.zaboes.models import Zabo, Comment, Recomment
 
 
@@ -72,3 +73,12 @@ class FollowingNotificatinoHelper():
         instance.save()
 
 
+class SomeoneFollowingNotificatinoHelper():
+
+    def __init__(self, notifier, following):
+        self.notifier = notifier
+        self.following = following
+
+    def notify_to_User(self):
+        instance = SomeoneFollowingNotification(to=self.notifier, following=self.following)
+        instance.save()
