@@ -7,6 +7,7 @@ from apps.users.models import ZaboUser
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from django.utils import timezone
+from datetime import datetime
 
 
 class Zabo(models.Model):
@@ -59,7 +60,16 @@ class Zabo(models.Model):
     def time_left(self):
         current = timezone.now()
         diff = self.deadline - current
-        return diff
+        return datetime.timedelta(diff).total_seconds()
+
+    @property
+    def is_finished(self):
+        current = timezone.now()
+        diff = self.deadline - current
+        if str(diff)[0] == '-':
+            return True
+        else:
+            return False
 
 
 class Poster(models.Model):
