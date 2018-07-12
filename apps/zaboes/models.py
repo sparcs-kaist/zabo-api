@@ -60,6 +60,7 @@ class Zabo(models.Model):
     def time_left(self):
         current = timezone.now()
         diff = self.deadline - current
+        return diff
         return datetime.timedelta(diff).total_seconds()
 
     @property

@@ -20,10 +20,17 @@ class PosterAdmin(admin.ModelAdmin):
     )
 
 
+class LikeAdmin(admin.ModelAdmin):
+    list_per_page = 15
+    list_display = (
+        'id', 'zabo', 'user',
+    )
+
+
 admin.site.register(Zabo, ZaboAdmin)
 admin.site.register(Comment)
 admin.site.register(Poster, PosterAdmin)
 admin.site.register(Recomment)
 admin.site.register(Timeslot)
 admin.site.register(Participate)
-admin.site.register(Like)
+admin.site.register(Like, LikeAdmin)
