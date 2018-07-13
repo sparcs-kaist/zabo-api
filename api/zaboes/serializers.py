@@ -181,11 +181,9 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
 
 
 class ZaboUrlSerializer(serializers.HyperlinkedModelSerializer):
-    url = serializers.HyperlinkedIdentityField(view_name='zabo-detail', read_only=True)
-
     class Meta:
         model = Zabo
-        fields = ('id', 'url')
+        fields = ('url',)
 
 
 class LikeSerializer(serializers.ModelSerializer):
