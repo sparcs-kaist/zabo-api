@@ -4,18 +4,21 @@ from apps.zaboes.models import Zabo, Comment, Recomment
 from itertools import chain
 from api.zaboes.serializers import ZaboUrlSerializer
 
-
+# aggregate helper functions to make reaction notification
 class ReactionNotificatinoHelper():
 
+    # init, should clarigy notifier
     def __init__(self, notifier):
         self.notifier = notifier
 
+    # should use it.
     def notify_to_User(self, item):
         if isinstance(item, Zabo):
             self.notify_to_zaboUser(item)
         elif isinstance(item, Comment):
             self.notify_to_commentUser(item)
 
+    # make noti to zaboUser
     def notify_to_zaboUser(self, zabo):
         user = zabo.founder
         if self.notifier == user:
@@ -32,6 +35,7 @@ class ReactionNotificatinoHelper():
             instance.reactors.add(self.notifier)
             instance.save()
 
+    # make noti to commentUser
     def notify_to_commentUser(self, comment):
         user = comment.author
         if self.notifier == user:
@@ -48,6 +52,7 @@ class ReactionNotificatinoHelper():
             instance.reactors.add(self.notifier)
             instance.save()
 
+    # when cancel reaction, modify reactors
     def cancel_reaction(self, item):
         if isinstance(item, Zabo):
             noti = ZaboReactionNotification.objects.filter(zabo=item)
@@ -61,6 +66,7 @@ class ReactionNotificatinoHelper():
 
 class FollowingNotificatinoHelper():
 
+    #should clarify notifier and to-user
     def __init__(self, notifier, to):
         self.notifier = notifier
         self.to = to
@@ -77,6 +83,7 @@ class FollowingNotificatinoHelper():
 
 class SomeoneFollowingNotificatinoHelper():
 
+    #should clarify notifier and following user
     def __init__(self, notifier, following):
         self.notifier = notifier
         self.following = following
@@ -97,7 +104,7 @@ def get_sorted_noti_list_by_user(user):
         key=lambda instance: instance.updated_time, reverse=True)
     return result_list
 
-
+# convert noti list to queryset.
 def convert_noti_list_to_queryset(request, noti_list):
     ret = []
     context = {"request": request}

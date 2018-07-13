@@ -6,6 +6,7 @@ from apps.zaboes.models import Zabo, Comment, Recomment
 
 # Create your models here.
 
+#Base model for notications model
 class BaseNotification(TimeStampedModel):
     to = models.ForeignKey(
         ZaboUser, on_delete=models.CASCADE,
@@ -18,9 +19,9 @@ class BaseNotification(TimeStampedModel):
         abstract = True
         ordering = ['updated_time']
 
-
+#base modle for reaction noti model
 class ReactionNotification(BaseNotification):
-    reactors = models.ManyToManyField(ZaboUser)
+    reactors = models.ManyToManyField(ZaboUser) # who react to someone.
 
     @property
     def reactors_count(self):
@@ -29,22 +30,25 @@ class ReactionNotification(BaseNotification):
     class Meta:
         abstract = True
 
-
+#reaction to zabo
+# 1. comment to zabo
+# 2. like to zabo
 class ZaboReactionNotification(ReactionNotification):
     zabo = models.ForeignKey(
         Zabo, on_delete=models.CASCADE,
         related_name="zabo_reaction",
 
     )
-
-
+#reaction to zabo
+# 1. recomment to comment
+# 2.
 class CommentReactionNotification(ReactionNotification):
     comment = models.ForeignKey(
         Comment, on_delete=models.CASCADE,
         related_name="comment_reaction",
     )
 
-
+#base modle for following noti model
 class FollowingNotification(BaseNotification):
     following = models.ForeignKey(
         ZaboUser, on_delete=models.CASCADE,
@@ -55,14 +59,16 @@ class FollowingNotification(BaseNotification):
     class Meta:
         abstract = True
 
-
+#followings do something
+# 1. add zabo
+# 2.
 class ZaboFollowingNotification(FollowingNotification):
     zabo = models.ForeignKey(
         Zabo, on_delete=models.CASCADE,
         related_name="zabo_following",
     )
 
-
+#Someone follows
 class SomeoneFollowingNotification(BaseNotification):
     following = models.ForeignKey(
         ZaboUser, on_delete=models.CASCADE
