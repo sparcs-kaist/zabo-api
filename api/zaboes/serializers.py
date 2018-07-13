@@ -153,6 +153,7 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
             'payment',
             'timeslots',
             'deadline',
+            'limit',
             # 'posters',
             # 'like_count'
         )
