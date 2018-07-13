@@ -11,3 +11,13 @@ class ZabouserSerializer(serializers.ModelSerializer):
         read_only_fields = (
             'joined_date',
         )  # auto_now_add나 auto_now가 true이면 read_only_fields여야 함.
+
+
+class ZabouserListSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = ZaboUser
+        fields = (
+            'url',
+            'nickName',
+            'profile_image',
+        )

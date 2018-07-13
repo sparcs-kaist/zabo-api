@@ -6,6 +6,9 @@ from django.db import models
 from apps.users.models import ZaboUser
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
+from django.utils import timezone
+from datetime import datetime
+
 
 class Zabo(models.Model):
     CATEGORY = (
@@ -34,7 +37,7 @@ class Zabo(models.Model):
     location = models.CharField(max_length=50)
     content = models.TextField(blank=True, null=True)
     category = models.CharField(
-        max_length=1, choices=CATEGORY
+        max_length=1, choices=CATEGORY,
     )
     apply = models.CharField(
         max_length=1, choices=APPLY
@@ -45,7 +48,7 @@ class Zabo(models.Model):
     created_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
     limit = models.IntegerField(default=1000)
-    deadline = models.DateTimeField
+    deadline = models.DateTimeField(editable=True, default=timezone.now())
     is_deleted = models.BooleanField(default=False)
     is_validated = models.BooleanField(default=False)  # 관리자에게 승인받았는지 여부.
 
@@ -53,7 +56,21 @@ class Zabo(models.Model):
     def like_count(self):
         return self.likes.all().count()
 
+    @property
+    def time_left(self):
+        current = timezone.now()
+        diff = self.deadline - current
+        return diff
+        return datetime.timedelta(diff).total_seconds()
 
+    @property
+    def is_finished(self):
+        current = timezone.now()
+        diff = self.deadline - current
+        if str(diff)[0] == '-':
+            return True
+        else:
+            return False
 
 
 
@@ -67,11 +84,10 @@ class Poster(models.Model):
     )
     image = models.FileField(upload_to='posters/')
     image_thumbnail = ImageSpecField(source='image',
-                                     processors=[ResizeToFill(600,800)],
+                                     processors=[ResizeToFill(600, 800)],
                                      format='JPEG',
-                                     options={'quality':60},
+                                     options={'quality': 60},
                                      )
-
 
 
 class Timeslot(models.Model):

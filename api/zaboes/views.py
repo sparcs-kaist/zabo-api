@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
 from rest_framework import viewsets
 from apps.zaboes.models import *
@@ -16,7 +16,6 @@ from rest_framework.decorators import action
 from apps.notifications.helpers import ReactionNotificatinoHelper, FollowingNotificatinoHelper
 
 
-
 # Create your views here.
 
 class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
@@ -26,9 +25,11 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
     """
     serializer_class = ZaboSerializer
     queryset = Zabo.objects.all()
-    filter_backends = (DjangoFilterBackend, SearchFilter)
-    filter_fields = ('category', 'apply', 'payment',)
-    search_fields = ('title', 'content', 'location',)
+    filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    filter_fields = ('category', 'apply', 'payment')
+    search_fields = ('title', 'content', 'location')
+    # 나중에 검색 결과 순서에 대해 이야기 해보아야 함
+    ordering_fields = ('title', 'likes', 'created_time')
 
     action_serializer_class = {
         'create': ZaboCreateSerializer,
@@ -93,7 +94,34 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         user = request.user
         queryset = Zabo.objects.filter(founder=user).order_by('updated_time')
         page = self.paginate_queryset(queryset)
-        serializer = ZaboListSerializer(page, many=True)
+        serializer = ZaboListSerializer(page, many=True, context={
+            'request': request,
+        })
+        if page is not None:
+            return self.get_paginated_response(serializer.data)
+        return Response(serializer.data)
+
+    @action(methods=['get'], detail=False)
+    def popular(self, request):
+        queryset = Zabo.objects.all()
+        queryset = sorted(queryset, key=lambda zabo: (-zabo.like_count))
+        page = self.paginate_queryset(queryset)
+        serializer = ZaboListSerializer(page, many=True, context={
+            'request': request,
+        })
+        if page is not None:
+            return self.get_paginated_response(serializer.data)
+        return Response(serializer.data)
+
+    @action(methods=['get'], detail=False)
+    def soon(self, request):
+        queryset = Zabo.objects.all()
+        queryset = (zabo for zabo in queryset if not zabo.is_finished)
+        queryset = sorted(queryset, key=lambda zabo: (zabo.time_left))
+        page = self.paginate_queryset(queryset)
+        serializer = ZaboListSerializer(page, many=True, context={
+            'request': request,
+        })
         if page is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
