@@ -176,7 +176,6 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
 
         timeslots_data = validated_data.pop('timeslots', None)
-
         instance.title = validated_data.get('title', instance.title)
         instance.location = validated_data.get('location', instance.location)
         instance.content = validated_data.get('content', instance.content)
@@ -187,7 +186,7 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
         instance.save()
 
         existing_time_slots = Timeslot.objects.filter(zabo=instance)
-        if existing_time_slots.exist():
+        if existing_time_slots.exists():
             for existing in  existing_time_slots.iterator():
                 existing.delete()
 
