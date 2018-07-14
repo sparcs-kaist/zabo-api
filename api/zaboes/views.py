@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import permissions
 from zabo.common.permissions import IsOwnerOrReadOnly
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
 from api.common.viewset import ActionAPIViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
@@ -37,9 +37,7 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         'retrieve': ZaboSerializer,
     }
 
-    permission_classes = (AllowAny,)
-
-    # permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
@@ -129,10 +127,12 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def list(self, request):
         serializer = CommentSerializer(self.queryset, many=True, context={'request': request})
         return Response(serializer.data)
+
 
     def perform_create(self, serializer):
         zabo_id = int(self.request.data["zabo"])
@@ -148,6 +148,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 class RecommentViewSet(viewsets.ModelViewSet):
     serializer_class = RecommentSerializer
     queryset = Recomment.objects.all()
+    permission_classes = (IsAuthenticatedOrReadOnly,)
 
     def list(self, request):
         serializer = self.get_serializer(self.queryset, many=True, context={'request': request})
@@ -172,6 +173,7 @@ class PosterViewSet(viewsets.ModelViewSet):
 class LikeViewSet(viewsets.ModelViewSet):
     serializer_class = LikeSerializer
     queryset = Like.objects.all()
+    permission_classes = (IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
         user = request.user
