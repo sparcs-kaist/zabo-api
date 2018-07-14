@@ -51,18 +51,11 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
 
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response({'Message': 'You have successfully register'}, status=status.HTTP_201_CREATED, headers=headers)
 
     def perform_create(self, serializer):
         zabo = serializer.save(
             founder=self.request.user
         )
-
         # save poster instance (can be more than one)
         for key, file in self.request.FILES.items():
             instance = Poster(zabo=zabo, image=file)
@@ -75,10 +68,8 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
             
     def perform_update(self, serializer):
         zabo = serializer.save(founder=self.request.user)
-
         for poster in zabo.posters.all():
             poster.delete()
-
         for key, file in self.request.FILES.items():
             instance = Poster(zabo=zabo, image=file)
             instance.save()
