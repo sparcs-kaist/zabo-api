@@ -68,20 +68,19 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
             instance = Poster(zabo=zabo, image=file)
             instance.save()
 
-        #make notification to followings
+        # make notification to followings
         followers = zabo.founder.follower.all()
         if followers.exists():
             for follower in followers.iterator():
-                FollowingNotificatinoHelper(notifier= zabo.founder, to=follower).notify_to_User(zabo)
-
-
+                FollowingNotificatinoHelper(notifier=zabo.founder, to=follower).notify_to_User(zabo)
 
     def retrieve(self, request, pk=None):
         zabo = get_object_or_404(self.queryset, pk=pk)
         if (zabo.is_deleted):
             return Response(status=status.HTTP_204_NO_CONTENT)
         serializer = self.get_serializer(zabo)
-        return Response(serializer.data)
+        new = serializer.is_liked(request.user, zabo)
+        return Response(new)
 
     def destroy(self, request, pk=None):
         instance = get_object_or_404(self.queryset, pk=pk)

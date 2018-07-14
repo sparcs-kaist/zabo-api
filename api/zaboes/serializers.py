@@ -110,6 +110,11 @@ class ZaboSerializer(serializers.ModelSerializer):
         )
         # auto_now_add나 auto_now가 true이면 read_only_fields여야 함.
 
+    def is_liked(self, user, zabo):
+        new = self.data
+        new.update({'is_liked': Like.objects.filter(user=user, zabo=zabo).exists()})
+        return new
+
 
 class ZaboListSerializer(serializers.ModelSerializer):
     posters = PosterSerializer(many=True, read_only=True)
