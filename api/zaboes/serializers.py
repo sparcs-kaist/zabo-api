@@ -92,11 +92,11 @@ class ZaboSerializer(serializers.ModelSerializer):
             'location',
             'content',
             'category',
+            'link_url',
             'apply',
             'payment',
             'created_time',
             'updated_time',
-            'limit',
             'posters',
             'comments',
             'timeslots',
@@ -147,13 +147,13 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
         fields = (
             'title',
             'location',
+            'link_url',
             'content',
             'category',
             'apply',
             'payment',
             'timeslots',
             'deadline',
-            'limit',
             # 'posters',
             # 'like_count'
         )

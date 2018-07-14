@@ -35,6 +35,7 @@ class Zabo(models.Model):
     )
     title = models.CharField(max_length=50, default="Title")
     location = models.CharField(max_length=50)
+    link_url = models.CharField(max_length=200, blank=True) #naming to avoid collision to hyperlinkseralizer url field.
     content = models.TextField(blank=True, null=True)
     category = models.CharField(
         max_length=1, choices=CATEGORY,
@@ -47,7 +48,6 @@ class Zabo(models.Model):
     )
     created_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
-    limit = models.IntegerField(default=1000)
     deadline = models.DateTimeField(editable=True, default=timezone.now())
     is_deleted = models.BooleanField(default=False)
     is_validated = models.BooleanField(default=False)  # 관리자에게 승인받았는지 여부.
