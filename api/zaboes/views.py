@@ -181,6 +181,7 @@ class ParticipateViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=newdata)
         serializer.is_valid(raise_exception=True)
         participate = serializer.save()
+        # TODO
         # ReactionNotificatinoHelper(user).notify_to_User(like.zabo)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
@@ -190,7 +191,8 @@ class ParticipateViewSet(viewsets.ModelViewSet):
         user = request.user
         zabo = int(request.data["zabo"])
         instance = Participate.objects.filter(participants=user).filter(zabo=zabo)
-        #ReactionNotificatinoHelper(request.user).cancel_reaction(get_object_or_404(Zabo.objects.all(), pk=zabo))
+        # TODO
+        # ReactionNotificatinoHelper(request.user).cancel_reaction(get_object_or_404(Zabo.objects.all(), pk=zabo))
         self.perform_destroy(instance)
         return Response({'Message': 'You have successfully unparticipate'}, status=status.HTTP_204_NO_CONTENT)
 
