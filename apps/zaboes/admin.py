@@ -12,6 +12,13 @@ class ZaboAdmin(admin.ModelAdmin):
     )
     search_fields = ('content',)
 
+class TimeslotAdmin(admin.ModelAdmin):
+    list_per_page = 15
+
+    list_display = (
+        'id', 'zabo', 'content',
+    )
+    search_fields = ('content',)
 
 class PosterAdmin(admin.ModelAdmin):
     list_per_page = 15
@@ -31,6 +38,6 @@ admin.site.register(Zabo, ZaboAdmin)
 admin.site.register(Comment)
 admin.site.register(Poster, PosterAdmin)
 admin.site.register(Recomment)
-admin.site.register(Timeslot)
+admin.site.register(Timeslot, TimeslotAdmin)
 admin.site.register(Participate)
 admin.site.register(Like, LikeAdmin)

@@ -34,6 +34,7 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         'create': ZaboCreateSerializer,
         'list': ZaboListSerializer,
         'retrieve': ZaboSerializer,
+        "update": ZaboUpdateSerializer
     }
 
     permission_classes = (AllowAny,)
@@ -67,6 +68,25 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         for key, file in self.request.FILES.items():
             instance = Poster(zabo=zabo, image=file)
             instance.save()
+    #
+    # def update(self, request, *args, **kwargs):
+    #     partial = kwargs.pop('partial', False)
+    #     instance = self.get_object()
+    #     serializer = self.get_serializer(instance, data=request.data, partial=partial)
+    #     serializer.is_valid(raise_exception=True)
+    #     self.perform_update(serializer)
+    #
+    #     if getattr(instance, '_prefetched_objects_cache', None):
+    #         # If 'prefetch_related' has been applied to a queryset, we need to
+    #         # forcibly invalidate the prefetch cache on the instance.
+    #         instance._prefetched_objects_cache = {}
+    #
+    #     return Response(serializer.data)
+
+    def perform_update(self, serializer):
+        zabp = serializer.save(founder=self.request.user)
+
+
 
     def retrieve(self, request, pk=None):
         zabo = get_object_or_404(self.queryset, pk=pk)
