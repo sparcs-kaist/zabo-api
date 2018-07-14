@@ -9,6 +9,7 @@ from apps.notifications.helpers import SomeoneFollowingNotificatinoHelper
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.generics import RetrieveAPIView
 
 
 # Create your views here.
@@ -21,6 +22,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = ZabouserSerializer
     queryset = ZaboUser.objects.all()
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    filter_fields = ('nickName',)
     search_fields = ('nickName', 'email')
     # 나중에 검색 결과 순서에 대해 이야기 해보아야 함
     ordering_fields = ('nickName', 'email', 'joined_date')
@@ -57,3 +59,9 @@ class UserViewSet(viewsets.ModelViewSet):
         nickname = request.data["nickname"]
         user.unfollow_others(nickname)
         return Response({'Message': 'You have successfully unfollow'}, status=status.HTTP_201_CREATED)
+
+
+class getUserView(RetrieveAPIView):
+    queryset = ZaboUser.objects.all()
+    filter_backends = ("nickName",)
+    serializer_class = ZabouserSerializer
