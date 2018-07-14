@@ -3,6 +3,7 @@ from apps.notifications.models import ZaboReactionNotification, CommentReactionN
 from apps.zaboes.models import Zabo, Comment, Recomment
 from itertools import chain
 from api.zaboes.serializers import ZaboUrlSerializer
+from django.shortcuts import get_object_or_404
 
 # aggregate helper functions to make reaction notification
 class ReactionNotificatinoHelper():
@@ -25,7 +26,7 @@ class ReactionNotificatinoHelper():
             return
 
         if ZaboReactionNotification.objects.filter(zabo=zabo).exists():
-            noti = ZaboReactionNotification.objects.filter(zabo=zabo)
+            noti = get_object_or_404(ZaboReactionNotification.objects.all(), zabo=zabo)
             noti.reactors.add(self.notifier)
             noti.save()
         else:
@@ -42,7 +43,7 @@ class ReactionNotificatinoHelper():
             return
 
         if CommentReactionNotification.objects.filter(comment=comment).exists():
-            noti = CommentReactionNotification.objects.filter(comment=comment)
+            noti = get_object_or_404(CommentReactionNotification.objects.all(), comment=comment)
             noti.reactors.add(self.notifier)
             noti.save()
         else:
@@ -55,12 +56,12 @@ class ReactionNotificatinoHelper():
     # when cancel reaction, modify reactors
     def cancel_reaction(self, item):
         if isinstance(item, Zabo):
-            noti = ZaboReactionNotification.objects.filter(zabo=item)
+            noti = get_object_or_404(ZaboReactionNotification.objects.all(), zabo=item)
         elif isinstance(item, Comment):
-            noti = CommentReactionNotification.objects.filter(comment=item)
-        noti.followings.remove(self.notifier)
+            noti = get_object_or_404(ZaboReactionNotification.objects.all(), comment=item)
+        noti.reactors.remove(self.notifier)
         noti.save()
-        if noti.followings.count() <= 0:
+        if noti.reactors.count() <= 0:
             noti.delete()
 
 

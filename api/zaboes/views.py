@@ -190,7 +190,7 @@ class LikeViewSet(viewsets.ModelViewSet):
         user_id = int(request.user.id)
         zabo_id = int(request.data["zabo"])
         instance = Like.objects.filter(user=user_id).filter(zabo=zabo_id)
-        ReactionNotificatinoHelper(request.user).cancel_reaction(instance)
+        ReactionNotificatinoHelper(request.user).cancel_reaction(get_object_or_404(Zabo.objects.all(), pk=zabo_id))
         self.perform_destroy(instance)
         return Response({'Message': 'You have successfully dislike'}, status=status.HTTP_204_NO_CONTENT)
 
