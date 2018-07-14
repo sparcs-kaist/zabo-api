@@ -169,6 +169,34 @@ class PosterViewSet(viewsets.ModelViewSet):
     queryset = Poster.objects.all()
 
 
+class ParticipateViewSet(viewsets.ModelViewSet):
+    serializer_class = ParticipateSerializer
+    queryset = Participate.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        newdata = request.data.copy()
+        newdata['participants'] = user.id
+        serializer = self.get_serializer(data=newdata)
+        serializer.is_valid(raise_exception=True)
+        participate = serializer.save()
+        # ReactionNotificatinoHelper(user).notify_to_User(like.zabo)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    @action(methods=['delete'], detail=False)
+    def unparticipate(self, request):
+        user = request.user
+        zabo = int(request.data["zabo"])
+        instance = Participate.objects.filter(participants=user).filter(zabo=zabo)
+        #ReactionNotificatinoHelper(request.user).cancel_reaction(get_object_or_404(Zabo.objects.all(), pk=zabo))
+        self.perform_destroy(instance)
+        return Response({'Message': 'You have successfully unparticipate'}, status=status.HTTP_204_NO_CONTENT)
+
+    def perform_destroy(self, instance):
+        return instance.delete()
+
+
 class LikeViewSet(viewsets.ModelViewSet):
     serializer_class = LikeSerializer
     queryset = Like.objects.all()
@@ -186,10 +214,10 @@ class LikeViewSet(viewsets.ModelViewSet):
 
     @action(methods=['delete'], detail=False)
     def dislike(self, request):
-        user_id = int(request.user.id)
-        zabo_id = int(request.data["zabo"])
-        instance = Like.objects.filter(user=user_id).filter(zabo=zabo_id)
-        ReactionNotificatinoHelper(request.user).cancel_reaction(get_object_or_404(Zabo.objects.all(), pk=zabo_id))
+        user = request.user
+        zabo = int(request.data["zabo"])
+        instance = Like.objects.filter(user=user).filter(zabo=zabo)
+        ReactionNotificatinoHelper(request.user).cancel_reaction(get_object_or_404(Zabo.objects.all(), pk=zabo))
         self.perform_destroy(instance)
         return Response({'Message': 'You have successfully dislike'}, status=status.HTTP_204_NO_CONTENT)
 

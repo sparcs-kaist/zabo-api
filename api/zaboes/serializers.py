@@ -192,6 +192,17 @@ class ZaboUrlSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url',)
 
 
+class ParticipateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Participate
+        fields = '__all__'
+        validators = [
+            UniqueTogetherValidator(
+                queryset=model.objects.all(),
+                fields=('zabo', 'participants')
+            )
+        ]
+
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
