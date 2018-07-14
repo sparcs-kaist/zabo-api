@@ -80,6 +80,7 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         serializer = self.get_serializer(zabo)
         new = serializer.is_liked(request.user, zabo)
+        new = serializer.does_participated(request.user, zabo)
         return Response(new)
 
     def destroy(self, request, pk=None):
