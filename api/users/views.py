@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import viewsets
 from api.users.serializers import ZabouserSerializer, ZabouserListSerializer
 from apps.users.models import ZaboUser
@@ -6,6 +5,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
+from apps.notifications.helpers import SomeoneFollowingNotificatinoHelper
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 
@@ -45,7 +46,9 @@ class UserViewSet(viewsets.ModelViewSet):
     def followOther(self, request):
         user = request.user
         nickname = request.data["nickname"]
-        user.follow_others(nickname)
+        user.follow_other(nickname)
+        following = get_object_or_404(ZaboUser, nickName=nickname)
+        SomeoneFollowingNotificatinoHelper(notifier=user, following=following).notify_to_User()
         return Response({'Message': 'You have successfully follow'}, status=status.HTTP_201_CREATED)
 
     @action(methods=['post', 'delete'], detail=False)

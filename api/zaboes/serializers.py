@@ -92,11 +92,11 @@ class ZaboSerializer(serializers.ModelSerializer):
             'location',
             'content',
             'category',
+            'link_url',
             'apply',
             'payment',
             'created_time',
             'updated_time',
-            'limit',
             'posters',
             'comments',
             'timeslots',
@@ -109,6 +109,11 @@ class ZaboSerializer(serializers.ModelSerializer):
             'updated_time',
         )
         # auto_now_add나 auto_now가 true이면 read_only_fields여야 함.
+
+    def is_liked(self, user, zabo):
+        new = self.data
+        new.update({'is_liked': Like.objects.filter(user=user, zabo=zabo).exists()})
+        return new
 
 
 class ZaboListSerializer(serializers.ModelSerializer):
@@ -147,6 +152,7 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
         fields = (
             'title',
             'location',
+            'link_url',
             'content',
             'category',
             'apply',
@@ -158,7 +164,6 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
     def to_internal_value(self, data):
         instance = super(ZaboCreateSerializer, self).to_internal_value(data)
         if "timeslots" in data:
-            # instance["id"] = 10  # That's sketchy though
             timeslot_str_data = data["timeslots"]
             timeslot_json = json.loads(timeslot_str_data)
             instance["timeslots"] = timeslot_json
@@ -194,6 +199,12 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
             for timeslot_data in timeslots_data:
                 Timeslot.objects.create(zabo=instance, **timeslot_data)
         return instance
+
+
+class ZaboUrlSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Zabo
+        fields = ('url',)
 
 
 class LikeSerializer(serializers.ModelSerializer):

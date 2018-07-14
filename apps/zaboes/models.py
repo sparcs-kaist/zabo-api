@@ -35,6 +35,7 @@ class Zabo(models.Model):
     )
     title = models.CharField(max_length=50, default="Title")
     location = models.CharField(max_length=50)
+    link_url = models.CharField(max_length=200, blank=True) #naming to avoid collision to hyperlinkseralizer url field.
     content = models.TextField(blank=True, null=True)
     category = models.CharField(
         max_length=1, choices=CATEGORY,
