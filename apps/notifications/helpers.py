@@ -22,8 +22,6 @@ class ReactionNotificatinoHelper():
     # make noti to zaboUser
     def notify_to_zaboUser(self, zabo):
         user = zabo.founder
-        if self.notifier == user:
-            return
 
         if ZaboReactionNotification.objects.filter(zabo=zabo).exists():
             noti = get_object_or_404(ZaboReactionNotification.objects.all(), zabo=zabo)
@@ -39,8 +37,6 @@ class ReactionNotificatinoHelper():
     # make noti to commentUser
     def notify_to_commentUser(self, comment):
         user = comment.author
-        if self.notifier == user:
-            return
 
         if CommentReactionNotification.objects.filter(comment=comment).exists():
             noti = get_object_or_404(CommentReactionNotification.objects.all(), comment=comment)
