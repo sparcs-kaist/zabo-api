@@ -18,6 +18,7 @@ class ZabouserListSerializer(serializers.HyperlinkedModelSerializer):
         model = ZaboUser
         fields = (
             'id',
+            'url',
             'nickName',
             'profile_image',
         )
