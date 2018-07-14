@@ -153,7 +153,6 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
             'payment',
             'timeslots',
             'deadline',
-            'limit',
         )
 
     def to_internal_value(self, data):
@@ -172,76 +171,31 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
         if timeslots_data:
             for timeslot_data in timeslots_data:
                 Timeslot.objects.create(zabo=zabo, **timeslot_data)
-        return zabo;
+        return zabo
 
-    def update(self, validated_data):
+    def update(self, instance, validated_data):
 
         timeslots_data = validated_data.pop('timeslots', None)
-        zabo = Zabo.objects.create(**validated_data)
 
-        existing_time_slots = Timeslot.objects.filter(zabo=zabo)
+        instance.title = validated_data.get('title', instance.title)
+        instance.location = validated_data.get('location', instance.location)
+        instance.content = validated_data.get('content', instance.content)
+        instance.category = validated_data.get('category', instance.category)
+        instance.apply = validated_data.get('apply', instance.apply)
+        instance.payment = validated_data.get('payment', instance.payment)
+        instance.deadline = validated_data.get('deadline', instance.deadline)
+        instance.save()
+
+        existing_time_slots = Timeslot.objects.filter(zabo=instance)
         if existing_time_slots.exist():
             for existing in  existing_time_slots.iterator():
                 existing.delete()
+
         if timeslots_data:
             for timeslot_data in timeslots_data:
-                Timeslot
-                Timeslot.objects.create(zabo=zabo, **timeslot_data)
-        return zabo;
-
-class ZaboUpdateSerializer(serializers.ModelSerializer):
-    posters = PosterSerializer(many=True, read_only=True)
-    timeslots = TimeslotSerializer(many=True, read_only=True)
-
-    # like_count =serializers.SerializerMethodField()
-
-    class Meta:
-        model = Zabo
-        fields = (
-            'title',
-            'location',
-            'content',
-            'category',
-            'apply',
-            'payment',
-            'created_time',
-            'updated_time',
-            'limit',
-            'posters',
-            'timeslots',
-            'like_count',
-            'deadline',
-            'is_finished',
-        )
-        read_only_fields = (
-            'created_time',
-            'updated_time',
-            'is_finished',
-
-        )
-
-    def to_internal_value(self, data):
-        instance = super(ZaboCreateSerializer, self).to_internal_value(data)
-        if "timeslots" in data:
-            # instance["id"] = 10  # That's sketchy though
-            timeslot_str_data = data["timeslots"]
-            timeslot_json = json.loads(timeslot_str_data)
-            instance["timeslots"] = timeslot_json
+                Timeslot.objects.create(zabo=instance, **timeslot_data)
         return instance
 
-    def create(self, validated_data):
-
-        timeslots_data = validated_data.pop('timeslots', None)
-        zabo = Zabo.objects.create(**validated_data)
-        if timeslots_data:
-            for timeslot_data in timeslots_data:
-                Timeslot.objects.create(zabo=zabo, **timeslot_data)
-        return zabo;
-
-        for poster_data in posters_data:
-            Poster.objects.create(zabo=zabo, **poster_data)
-
-        return zabo;
 
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
