@@ -51,14 +51,20 @@ class ReactionNotificatinoHelper():
 
     # when cancel reaction, modify reactors
     def cancel_reaction(self, item):
+        item_exist = False
         if isinstance(item, Zabo):
-            noti = get_object_or_404(ZaboReactionNotification.objects.all(), zabo=item)
+            item_exist = ZaboReactionNotification.objects.filter(zabo=item).exists()
+            if item_exist:
+                noti = get_object_or_404(ZaboReactionNotification.objects.all(), zabo=item)
         elif isinstance(item, Comment):
-            noti = get_object_or_404(ZaboReactionNotification.objects.all(), comment=item)
-        noti.reactors.remove(self.notifier)
-        noti.save()
-        if noti.reactors.count() <= 0:
-            noti.delete()
+            item_exist =  CommentReactionNotification.objects.filter(comment=item).exists()
+            if item_exist:
+                noti = get_object_or_404(CommentReactionNotification.objects.all(), comment=item)
+        if item_exist:
+            noti.reactors.remove(self.notifier)
+            noti.save()
+            if noti.reactors.count() <= 0:
+                noti.delete()
 
 
 class FollowingNotificatinoHelper():
