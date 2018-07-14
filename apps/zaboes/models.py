@@ -73,7 +73,6 @@ class Zabo(models.Model):
             return False
 
 
-
 class Poster(models.Model):
     zabo = models.ForeignKey(
         Zabo,
