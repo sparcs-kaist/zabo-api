@@ -81,6 +81,7 @@ class ZaboSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
     posters = PosterSerializer(many=True, read_only=True)
     timeslots = TimeslotSerializer(many=True, read_only=True)
+    author = ZabouserListSerializer(read_only=True)
 
     # like_count =serializers.SerializerMethodField()
 
