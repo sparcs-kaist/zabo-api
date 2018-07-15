@@ -160,8 +160,6 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
             'payment',
             'timeslots',
             'deadline',
-            # 'posters',
-            # 'like_count'
         )
 
     def to_internal_value(self, data):
@@ -179,12 +177,29 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
         if timeslots_data:
             for timeslot_data in timeslots_data:
                 Timeslot.objects.create(zabo=zabo, **timeslot_data)
-        return zabo;
+        return zabo
 
-        for poster_data in posters_data:
-            Poster.objects.create(zabo=zabo, **poster_data)
+    def update(self, instance, validated_data):
 
-        return zabo;
+        timeslots_data = validated_data.pop('timeslots', None)
+        instance.title = validated_data.get('title', instance.title)
+        instance.location = validated_data.get('location', instance.location)
+        instance.content = validated_data.get('content', instance.content)
+        instance.category = validated_data.get('category', instance.category)
+        instance.apply = validated_data.get('apply', instance.apply)
+        instance.payment = validated_data.get('payment', instance.payment)
+        instance.deadline = validated_data.get('deadline', instance.deadline)
+        instance.save()
+
+        existing_time_slots = Timeslot.objects.filter(zabo=instance)
+        if existing_time_slots.exists():
+            for existing in  existing_time_slots.iterator():
+                existing.delete()
+
+        if timeslots_data:
+            for timeslot_data in timeslots_data:
+                Timeslot.objects.create(zabo=instance, **timeslot_data)
+        return instance
 
 
 class ZaboUrlSerializer(serializers.HyperlinkedModelSerializer):
