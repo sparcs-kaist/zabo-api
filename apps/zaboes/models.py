@@ -29,7 +29,7 @@ class Zabo(models.Model):
         ('A', 'Payment on account')
     )
 
-    founder = models.ForeignKey(
+    author = models.ForeignKey(
         ZaboUser, on_delete=models.CASCADE,
     )
     title = models.CharField(max_length=50, default="Title")
@@ -47,7 +47,7 @@ class Zabo(models.Model):
     )
     created_time = models.DateTimeField(auto_now_add=True)
     updated_time = models.DateTimeField(auto_now=True)
-    deadline = models.DateTimeField(editable=True, default=timezone.now())
+    deadline = models.DateTimeField(editable=True, default=timezone.now)
     is_deleted = models.BooleanField(default=False)
     is_validated = models.BooleanField(default=False)  # 관리자에게 승인받았는지 여부.
 

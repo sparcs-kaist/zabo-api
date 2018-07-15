@@ -8,7 +8,7 @@ class ZaboAdmin(admin.ModelAdmin):
     list_per_page = 15
 
     list_display = (
-        'id', 'title', 'content', 'founder', 'location', 'created_time',
+        'id', 'title', 'content', 'author', 'location', 'created_time',
     )
     search_fields = ('content',)
 
