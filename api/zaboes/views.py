@@ -59,7 +59,7 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
     def perform_create(self, serializer):
 
         zabo = serializer.save(
-            founder=self.request.user
+            author=self.request.user
         )
 
         # save poster instance (can be more than one)
@@ -68,10 +68,10 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
             instance.save()
 
         # make notification to followings
-        followers = zabo.founder.follower.all()
+        followers = zabo.author.follower.all()
         if followers.exists():
             for follower in followers.iterator():
-                FollowingNotificatinoHelper(notifier=zabo.founder, to=follower).notify_to_User(zabo)
+                FollowingNotificatinoHelper(notifier=zabo.author, to=follower).notify_to_User(zabo)
 
     def retrieve(self, request, pk=None):
         zabo = get_object_or_404(self.queryset, pk=pk)
@@ -89,8 +89,10 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
 
     @action(methods=['get'], detail=False)
     def created(self, request):
+        if request.user.is_anonymous:
+            return Response({'Message': 'You are unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
         user = request.user
-        queryset = Zabo.objects.filter(founder=user).order_by('updated_time')
+        queryset = Zabo.objects.filter(author=user).order_by('updated_time')
         page = self.paginate_queryset(queryset)
         serializer = ZaboListSerializer(page, many=True, context={
             'request': request,
