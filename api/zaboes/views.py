@@ -7,14 +7,14 @@ from apps.zaboes.models import *
 from api.zaboes.serializers import *
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions
-from zabo.common.permissions import IsOwnerOrReadOnly
+from zabo.common.permissions import IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
 from api.common.viewset import ActionAPIViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from apps.notifications.helpers import ReactionNotificatinoHelper, FollowingNotificatinoHelper
-
+from zabo.common.permissions import IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly
 
 # Create your views here.
 
@@ -31,15 +31,14 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
     # 나중에 검색 결과 순서에 대해 이야기 해보아야 함
     ordering_fields = ('title', 'likes', 'created_time')
 
+
     action_serializer_class = {
         'create': ZaboCreateSerializer,
         'list': ZaboListSerializer,
         'retrieve': ZaboSerializer,
     }
 
-    permission_classes = (AllowAny,)
-
-    # permission_classes = (IsAuthenticated, )
+    permission_classes = (IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly, )
 
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
@@ -129,10 +128,12 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
+    permission_classes = (IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly,)
 
     def list(self, request):
         serializer = CommentSerializer(self.queryset, many=True, context={'request': request})
         return Response(serializer.data)
+
 
     def perform_create(self, serializer):
         zabo_id = int(self.request.data["zabo"])
@@ -148,6 +149,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 class RecommentViewSet(viewsets.ModelViewSet):
     serializer_class = RecommentSerializer
     queryset = Recomment.objects.all()
+    permission_classes = (IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly, )
 
     def list(self, request):
         serializer = self.get_serializer(self.queryset, many=True, context={'request': request})
@@ -167,11 +169,13 @@ class RecommentViewSet(viewsets.ModelViewSet):
 class PosterViewSet(viewsets.ModelViewSet):
     serializer_class = PosterSerializer
     queryset = Poster.objects.all()
+    permission_classes = (IsAdminUser,)
 
 
 class LikeViewSet(viewsets.ModelViewSet):
     serializer_class = LikeSerializer
     queryset = Like.objects.all()
+    permission_classes = (IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
         user = request.user

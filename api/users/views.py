@@ -26,6 +26,7 @@ class UserViewSet(viewsets.ModelViewSet):
     search_fields = ('nickName', 'email')
     # 나중에 검색 결과 순서에 대해 이야기 해보아야 함
     ordering_fields = ('nickName', 'email', 'joined_date')
+    permission_classes = ('')
 
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
@@ -61,7 +62,3 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response({'Message': 'You have successfully unfollow'}, status=status.HTTP_201_CREATED)
 
 
-class getUserView(RetrieveAPIView):
-    queryset = ZaboUser.objects.all()
-    filter_backends = ("nickName",)
-    serializer_class = ZabouserSerializer
