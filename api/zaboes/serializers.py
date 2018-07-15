@@ -116,6 +116,11 @@ class ZaboSerializer(serializers.ModelSerializer):
         new.update({'is_liked': Like.objects.filter(user=user, zabo=zabo).exists()})
         return new
 
+    def does_participated(self, user, zabo):
+        new = self.data
+        new.update({'does_participated': Participate.objects.filter(participants=user, zabo=zabo).exists()})
+        return new
+
 
 class ZaboListSerializer(serializers.ModelSerializer):
     posters = PosterSerializer(many=True, read_only=True)
@@ -192,6 +197,17 @@ class ZaboUrlSerializer(serializers.HyperlinkedModelSerializer):
         model = Zabo
         fields = ('url',)
 
+
+class ParticipateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Participate
+        fields = '__all__'
+        validators = [
+            UniqueTogetherValidator(
+                queryset=model.objects.all(),
+                fields=('zabo', 'participants')
+            )
+        ]
 
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
