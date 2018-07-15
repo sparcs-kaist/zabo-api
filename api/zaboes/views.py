@@ -38,7 +38,7 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         'retrieve': ZaboSerializer,
     }
 
-    permission_classes = (IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly, IsAdminUser,)
+    permission_classes = (IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly, )
 
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
@@ -149,7 +149,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 class RecommentViewSet(viewsets.ModelViewSet):
     serializer_class = RecommentSerializer
     queryset = Recomment.objects.all()
-    permission_classes = (IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly, IsAdminUser,)
+    permission_classes = (IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly, )
 
     def list(self, request):
         serializer = self.get_serializer(self.queryset, many=True, context={'request': request})
