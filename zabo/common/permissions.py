@@ -30,7 +30,7 @@ class IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly(permissions.BasePermission
 
         if request.method in permissions.SAFE_METHODS:
             return True
-        elif eq(request.method, 'POST'):
+        elif eq(request.method, 'POST') or eq(request.method, 'DELETE'):
             return  request.user and request.user.is_authenticated
         elif request.method in UPDATE_METHODS:
             return obj.author == request.user
