@@ -78,6 +78,10 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         if (zabo.is_deleted):
             return Response(status=status.HTTP_204_NO_CONTENT)
         serializer = self.get_serializer(zabo)
+        if request.user.is_anonymous:
+            new = serializer.data
+            new.update({'is_liked': False})
+            return Response(new)
         new = serializer.is_liked(request.user, zabo)
         return Response(new)
 
