@@ -1,13 +1,12 @@
 import uuid
 
-from django.apps import apps as django_apps
-from django.conf import settings
 from django.db import models
 from apps.users.models import ZaboUser
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from django.utils import timezone
 from datetime import datetime
+from apps.common.models import TimeStampedModel, HavingAuthorModel
 
 
 class Zabo(models.Model):
@@ -100,37 +99,25 @@ class Timeslot(models.Model):
     end_time = models.DateTimeField(default=None)
 
 
-class Comment(models.Model):
+class Comment(TimeStampedModel, HavingAuthorModel):
     zabo = models.ForeignKey(
         Zabo,
         related_name='comments',
         on_delete=models.CASCADE,
     )
-    author = models.ForeignKey(
-        ZaboUser, on_delete=models.CASCADE, default=None
-
-    )
     content = models.CharField(max_length=140)
-    created_time = models.DateTimeField(auto_now_add=True)
-    updated_time = models.DateTimeField(auto_now=True)
     is_private = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
     is_blocked = models.BooleanField(default=False)
 
 
-class Recomment(models.Model):
+class Recomment(TimeStampedModel, HavingAuthorModel):
     comment = models.ForeignKey(
         Comment,
         related_name='recomments',
         on_delete=models.CASCADE,
     )
-    author = models.ForeignKey(
-        ZaboUser, on_delete=models.CASCADE,
-        default=None
-    )
     content = models.CharField(max_length=140)
-    created_time = models.DateTimeField(auto_now_add=True)
-    updated_time = models.DateTimeField(auto_now=True)
     is_private = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
     is_blocked = models.BooleanField(default=False)

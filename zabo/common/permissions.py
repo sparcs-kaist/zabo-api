@@ -21,6 +21,8 @@ class IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly(permissions.BasePermission
     Custom permission to only allow owners of an object to edit it.
     """
 
+    message = "It's not permissioned"
+
     def has_object_permission(self, request, view, obj):
         # Read permissions are allowed to any request,
         # so we'll always allow GET, HEAD or OPTIONS requests.
@@ -31,7 +33,7 @@ class IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly(permissions.BasePermission
         elif eq(request.method, 'POST'):
             return  request.user and request.user.is_authenticated
         elif request.method in UPDATE_METHODS:
-            return obj.owner == request.user
+            return obj.author == request.user
 
         # Other method does not permissioned.
         return False
