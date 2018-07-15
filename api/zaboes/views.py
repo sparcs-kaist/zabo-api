@@ -7,14 +7,14 @@ from apps.zaboes.models import *
 from api.zaboes.serializers import *
 from django.shortcuts import get_object_or_404
 from rest_framework import permissions
-from zabo.common.permissions import IsOwnerOrReadOnly
+from zabo.common.permissions import IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAdminUser
 from api.common.viewset import ActionAPIViewSet
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from apps.notifications.helpers import ReactionNotificatinoHelper, FollowingNotificatinoHelper
-
+from zabo.common.permissions import IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly
 
 # Create your views here.
 
@@ -31,6 +31,7 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
     # 나중에 검색 결과 순서에 대해 이야기 해보아야 함
     ordering_fields = ('title', 'likes', 'created_time')
 
+
     action_serializer_class = {
         'create': ZaboCreateSerializer,
         'list': ZaboListSerializer,
@@ -38,9 +39,7 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         "update": ZaboCreateSerializer
     }
 
-    permission_classes = (AllowAny,)
-
-    # permission_classes = (IsAuthenticated, )
+    permission_classes = (IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly, )
 
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
@@ -51,20 +50,19 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
 
-
     def perform_create(self, serializer):
         zabo = serializer.save(
-            founder=self.request.user
+            author=self.request.user
         )
         # save poster instance (can be more than one)
         for key, file in self.request.FILES.items():
             instance = Poster(zabo=zabo, image=file)
             instance.save()
         # make notification to followings
-        followers = zabo.founder.follower.all()
+        followers = zabo.author.follower.all()
         if followers.exists():
             for follower in followers.iterator():
-                FollowingNotificatinoHelper(notifier=zabo.founder, to=follower).notify_to_User(zabo)
+                FollowingNotificatinoHelper(notifier=zabo.author, to=follower).notify_to_User(zabo)
             
     def perform_update(self, serializer):
         zabo = serializer.save(founder=self.request.user)
@@ -74,12 +72,15 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
             instance = Poster(zabo=zabo, image=file)
             instance.save()
 
-
     def retrieve(self, request, pk=None):
         zabo = get_object_or_404(self.queryset, pk=pk)
         if (zabo.is_deleted):
             return Response(status=status.HTTP_204_NO_CONTENT)
         serializer = self.get_serializer(zabo)
+        if request.user.is_anonymous:
+            new = serializer.data
+            new.update({'is_liked': False})
+            return Response(new)
         new = serializer.is_liked(request.user, zabo)
         return Response(new)
 
@@ -91,8 +92,10 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
 
     @action(methods=['get'], detail=False)
     def created(self, request):
+        if request.user.is_anonymous:
+            return Response({'Message': 'You are unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
         user = request.user
-        queryset = Zabo.objects.filter(founder=user).order_by('updated_time')
+        queryset = Zabo.objects.filter(author=user).order_by('updated_time')
         page = self.paginate_queryset(queryset)
         serializer = ZaboListSerializer(page, many=True, context={
             'request': request,
@@ -130,10 +133,12 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
+    permission_classes = (IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly,)
 
     def list(self, request):
         serializer = CommentSerializer(self.queryset, many=True, context={'request': request})
         return Response(serializer.data)
+
 
     def perform_create(self, serializer):
         zabo_id = int(self.request.data["zabo"])
@@ -149,6 +154,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 class RecommentViewSet(viewsets.ModelViewSet):
     serializer_class = RecommentSerializer
     queryset = Recomment.objects.all()
+    permission_classes = (IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly, )
 
     def list(self, request):
         serializer = self.get_serializer(self.queryset, many=True, context={'request': request})
@@ -168,11 +174,13 @@ class RecommentViewSet(viewsets.ModelViewSet):
 class PosterViewSet(viewsets.ModelViewSet):
     serializer_class = PosterSerializer
     queryset = Poster.objects.all()
+    permission_classes = (IsAdminUser,)
 
 
 class LikeViewSet(viewsets.ModelViewSet):
     serializer_class = LikeSerializer
     queryset = Like.objects.all()
+    permission_classes = (IsAuthenticated,)
 
     def create(self, request, *args, **kwargs):
         user = request.user

@@ -81,13 +81,14 @@ class ZaboSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
     posters = PosterSerializer(many=True, read_only=True)
     timeslots = TimeslotSerializer(many=True, read_only=True)
+    author = ZabouserListSerializer(read_only=True)
 
     # like_count =serializers.SerializerMethodField()
 
     class Meta:
         model = Zabo
         fields = (
-            'founder',
+            'author',
             'title',
             'location',
             'content',
@@ -118,13 +119,13 @@ class ZaboSerializer(serializers.ModelSerializer):
 
 class ZaboListSerializer(serializers.ModelSerializer):
     posters = PosterSerializer(many=True, read_only=True)
-    founder = ZabouserListSerializer(read_only=True)
+    author = ZabouserListSerializer(read_only=True)
 
     class Meta:
         model = Zabo
         fields = (
             'id',
-            'founder',
+            'author',
             'posters',
             'created_time',
             'updated_time',

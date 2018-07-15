@@ -1,16 +1,15 @@
 import uuid
 
-from django.apps import apps as django_apps
-from django.conf import settings
 from django.db import models
 from apps.users.models import ZaboUser
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 from django.utils import timezone
 from datetime import datetime
+from apps.common.models import TimeStampedModel, HavingAuthorModel
 
 
-class Zabo(models.Model):
+class Zabo(TimeStampedModel, HavingAuthorModel):
     CATEGORY = (
         ('R', 'Recruting'),
         ('P', 'Performance'),
@@ -30,9 +29,7 @@ class Zabo(models.Model):
         ('A', 'Payment on account')
     )
 
-    founder = models.ForeignKey(
-        ZaboUser, on_delete=models.CASCADE,
-    )
+
     title = models.CharField(max_length=50, default="Title")
     location = models.CharField(max_length=50)
     link_url = models.CharField(max_length=200, blank=True) #naming to avoid collision to hyperlinkseralizer url field.
@@ -46,9 +43,7 @@ class Zabo(models.Model):
     payment = models.CharField(
         max_length=1, choices=PAYMENT_PLAN
     )
-    created_time = models.DateTimeField(auto_now_add=True)
-    updated_time = models.DateTimeField(auto_now=True)
-    deadline = models.DateTimeField(editable=True, default=timezone.now())
+    deadline = models.DateTimeField(editable=True, default=timezone.now)
     is_deleted = models.BooleanField(default=False)
     is_validated = models.BooleanField(default=False)  # 관리자에게 승인받았는지 여부.
 
@@ -100,37 +95,25 @@ class Timeslot(models.Model):
     end_time = models.DateTimeField(default=None)
 
 
-class Comment(models.Model):
+class Comment(TimeStampedModel, HavingAuthorModel):
     zabo = models.ForeignKey(
         Zabo,
         related_name='comments',
         on_delete=models.CASCADE,
     )
-    author = models.ForeignKey(
-        ZaboUser, on_delete=models.CASCADE, default=None
-
-    )
     content = models.CharField(max_length=140)
-    created_time = models.DateTimeField(auto_now_add=True)
-    updated_time = models.DateTimeField(auto_now=True)
     is_private = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
     is_blocked = models.BooleanField(default=False)
 
 
-class Recomment(models.Model):
+class Recomment(TimeStampedModel, HavingAuthorModel):
     comment = models.ForeignKey(
         Comment,
         related_name='recomments',
         on_delete=models.CASCADE,
     )
-    author = models.ForeignKey(
-        ZaboUser, on_delete=models.CASCADE,
-        default=None
-    )
     content = models.CharField(max_length=140)
-    created_time = models.DateTimeField(auto_now_add=True)
-    updated_time = models.DateTimeField(auto_now=True)
     is_private = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
     is_blocked = models.BooleanField(default=False)
