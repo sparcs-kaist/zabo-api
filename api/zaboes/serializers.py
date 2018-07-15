@@ -87,7 +87,7 @@ class ZaboSerializer(serializers.ModelSerializer):
     class Meta:
         model = Zabo
         fields = (
-            'founder',
+            'author',
             'title',
             'location',
             'content',
@@ -118,13 +118,13 @@ class ZaboSerializer(serializers.ModelSerializer):
 
 class ZaboListSerializer(serializers.ModelSerializer):
     posters = PosterSerializer(many=True, read_only=True)
-    founder = ZabouserListSerializer(read_only=True)
+    author = ZabouserListSerializer(read_only=True)
 
     class Meta:
         model = Zabo
         fields = (
             'id',
-            'founder',
+            'author',
             'posters',
             'created_time',
             'updated_time',

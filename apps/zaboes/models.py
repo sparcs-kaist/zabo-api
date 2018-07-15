@@ -9,7 +9,7 @@ from datetime import datetime
 from apps.common.models import TimeStampedModel, HavingAuthorModel
 
 
-class Zabo(models.Model):
+class Zabo(TimeStampedModel, HavingAuthorModel):
     CATEGORY = (
         ('R', 'Recruting'),
         ('P', 'Performance'),
@@ -29,9 +29,7 @@ class Zabo(models.Model):
         ('A', 'Payment on account')
     )
 
-    author = models.ForeignKey(
-        ZaboUser, on_delete=models.CASCADE,
-    )
+
     title = models.CharField(max_length=50, default="Title")
     location = models.CharField(max_length=50)
     link_url = models.CharField(max_length=200, blank=True) #naming to avoid collision to hyperlinkseralizer url field.
@@ -45,8 +43,6 @@ class Zabo(models.Model):
     payment = models.CharField(
         max_length=1, choices=PAYMENT_PLAN
     )
-    created_time = models.DateTimeField(auto_now_add=True)
-    updated_time = models.DateTimeField(auto_now=True)
     deadline = models.DateTimeField(editable=True, default=timezone.now)
     is_deleted = models.BooleanField(default=False)
     is_validated = models.BooleanField(default=False)  # 관리자에게 승인받았는지 여부.
