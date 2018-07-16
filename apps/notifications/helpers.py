@@ -115,27 +115,27 @@ def convert_noti_list_to_queryset(request, noti_list):
         for noti in noti_list:
             ret_noti = {}
             if isinstance(noti, ZaboReactionNotification):
-                serializer = ZaboUrlSerializer(noti.zabo, context=context)
+                # serializer = ZaboUrlSerializer(noti.zabo, context=context)
                 ret_noti["reactors_count"] = noti.reactors_count
                 ret_noti["content"] = noti.content
                 ret_noti["from"] = noti.reactors.first().nickName
                 ret_noti["from_profile"] = noti.reactors.first().profile_image.url
-                ret_noti["url"] = serializer.data["url"]
+                ret_noti["url"] = noti.zabo.id
                 ret_noti["type"] = "ZaboReaction"
             elif isinstance(noti, CommentReactionNotification):
-                serializer = ZaboUrlSerializer(noti.comment.zabo, context=context)
+                # serializer = ZaboUrlSerializer(noti.comment.zabo, context=context)
                 ret_noti["reactors_count"] = noti.reactors_count
                 ret_noti["content"] = noti.content
                 ret_noti["from"] = noti.reactors.first().nickName
                 ret_noti["from_profile"] = noti.reactors.first().profile_image.url
-                ret_noti["url"] = serializer.data["url"]
+                ret_noti["url"] = noti.comment.id
                 ret_noti["type"] = "CommentReaction"
             elif isinstance(noti, ZaboFollowingNotification):
-                serializer = ZaboUrlSerializer(noti.zabo, context=context)
+                # serializer = ZaboUrlSerializer(noti.zabo, context=context)
                 ret_noti["from"] = noti.following.nickName
                 ret_noti["from_profile"] = noti.following.profile_image.url
                 ret_noti["content"] = noti.content
-                ret_noti["url"] = serializer.data["url"]
+                ret_noti["url"] = noti.zabo.id
                 ret_noti["type"] = "ZaboFollowing"
             elif isinstance(noti, SomeoneFollowingNotification):
                 ret_noti["from"] = noti.following.nickName
