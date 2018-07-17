@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework import viewsets
 from api.users.serializers import ZabouserSerializer, ZabouserListSerializer
 from apps.users.models import ZaboUser
@@ -6,10 +5,13 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
+from apps.notifications.helpers import SomeoneFollowingNotificatinoHelper
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from apps.users.sparcssso import Client
 from zabo.settings.components.secret import SSO_CLIENT_ID, SSO_SECRET_KEY, SSO_IS_BETA
+from rest_framework.generics import RetrieveAPIView
 
 sso_client = Client(SSO_CLIENT_ID, SSO_SECRET_KEY, SSO_IS_BETA)
 
@@ -23,9 +25,11 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = ZabouserSerializer
     queryset = ZaboUser.objects.all()
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
+    filter_fields = ('nickName',)
     search_fields = ('nickName', 'email')
     # 나중에 검색 결과 순서에 대해 이야기 해보아야 함
     ordering_fields = ('nickName', 'email', 'joined_date')
+    permission_classes = ('')
 
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
@@ -48,7 +52,9 @@ class UserViewSet(viewsets.ModelViewSet):
     def followOther(self, request):
         user = request.user
         nickname = request.data["nickname"]
-        user.follow_others(nickname)
+        user.follow_other(nickname)
+        following = get_object_or_404(ZaboUser, nickName=nickname)
+        SomeoneFollowingNotificatinoHelper(notifier=user, following=following).notify_to_User()
         return Response({'Message': 'You have successfully follow'}, status=status.HTTP_201_CREATED)
 
     @action(methods=['post', 'delete'], detail=False)
@@ -57,3 +63,5 @@ class UserViewSet(viewsets.ModelViewSet):
         nickname = request.data["nickname"]
         user.unfollow_others(nickname)
         return Response({'Message': 'You have successfully unfollow'}, status=status.HTTP_201_CREATED)
+
+

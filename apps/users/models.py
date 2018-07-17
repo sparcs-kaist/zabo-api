@@ -8,6 +8,7 @@ from zabo.settings.components.secret import SSO_CLIENT_ID, SSO_SECRET_KEY, SSO_I
 
 sso_client = Client(SSO_CLIENT_ID, SSO_SECRET_KEY, is_beta=SSO_IS_BETA)
 
+
 class ZaboUserManager(BaseUserManager):
 
     def _create_user(self, email, password, is_staff, is_superuser, **extra_fields):
@@ -56,28 +57,34 @@ class ZaboUser(AbstractBaseUser, PermissionsMixin):
     joined_date = models.DateField(auto_now_add=True)
     profile_image = models.FileField(upload_to='users/profile/')
     phone = models.CharField(max_length=45, blank=True)
-    following = models.ManyToManyField("self", blank=True)
-    sid = models.CharField(max_length=30) # 서비스에 대해 고유하게 부여받은 ID
+
+    following = models.ManyToManyField("self", blank=True, related_name="follower", symmetrical=False)
+    sid = models.CharField(max_length=30)  # 서비스에 대해 고유하게 부여받은 ID
     point = 0
     point_updated_time = None
 
-    def get_participating_zaboes(self):
-        pass
 
-    def follow_other(self, nickname):
-        following_user = get_object_or_404(ZaboUser, nickName=nickname)
-        self.following.add(following_user)
-        self.save()
+def get_participating_zaboes(self):
+    pass
 
-    def unfollow_other(self, nickname):
-        following_user = get_object_or_404(ZaboUser, nickName=nickname)
-        self.following.remove(following_user)
-        self.save()
 
-    def get_point(self):
-        self.point = sso_client.get_point(self.sid)
-        return self.point
+def follow_other(self, nickname):
+    following_user = get_object_or_404(ZaboUser, nickName=nickname)
+    self.following.add(following_user)
+    self.save()
 
-    def add_point(self, delta, message):
-        result = sso_client.modify_point(self.sid, delta, message, 0)
-        return result
+
+def unfollow_other(self, nickname):
+    following_user = get_object_or_404(ZaboUser, nickName=nickname)
+    self.following.remove(following_user)
+    self.save()
+
+
+def get_point(self):
+    self.point = sso_client.get_point(self.sid)
+    return self.point
+
+
+def add_point(self, delta, message):
+    result = sso_client.modify_point(self.sid, delta, message, 0)
+    return result
