@@ -3,7 +3,10 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.shortcuts import get_object_or_404
+from apps.users.sparcssso import Client
+from zabo.settings.components.secret import SSO_CLIENT_ID, SSO_SECRET_KEY, SSO_IS_BETA
 
+sso_client = Client(SSO_CLIENT_ID, SSO_SECRET_KEY, is_beta=SSO_IS_BETA)
 
 class ZaboUserManager(BaseUserManager):
 
@@ -54,6 +57,9 @@ class ZaboUser(AbstractBaseUser, PermissionsMixin):
     profile_image = models.FileField(upload_to='users/profile/')
     phone = models.CharField(max_length=45, blank=True)
     following = models.ManyToManyField("self", blank=True)
+    sid = models.CharField(max_length=30) # 서비스에 대해 고유하게 부여받은 ID
+    point = 0
+    point_updated_time = None
 
     def get_participating_zaboes(self):
         pass
@@ -67,3 +73,11 @@ class ZaboUser(AbstractBaseUser, PermissionsMixin):
         following_user = get_object_or_404(ZaboUser, nickName=nickname)
         self.following.remove(following_user)
         self.save()
+
+    def get_point(self):
+        self.point = sso_client.get_point(self.sid)
+        return self.point
+
+    def add_point(self, delta, message):
+        result = sso_client.modify_point(self.sid, delta, message, 0)
+        return result
