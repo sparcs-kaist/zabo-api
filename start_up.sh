@@ -1,10 +1,11 @@
 #! /bin/bash
-cd /home/zabo/zabo_api/zabo_api
+cd /home/zabo/zabo_api
 python3 manage.py makemigrations
 python3 manage.py migrate
-cd ..
-uwsgi --ini uwgi.ini &
-cd nginx_config
-ln -s 
+uwsgi --ini uwsgi.ini &
+cd /home/zabo/zabo_api/nginx_config
+cp default2 /etc/nginx/sites-available/default2
+cd /etc/nginx/sites-enabled
+ln -s /etc/nginx/sites-available/default2 default2  
 
 service nginx start

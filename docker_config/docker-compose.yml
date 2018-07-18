@@ -17,7 +17,7 @@ services:
     image: zabo-base:0.1
     restart: always
     volumes:
-      - /home/jara/zabo/zabo_api/zabo_api:/home/zabo/zabo_api
+      - /home/jara/zabo/zabo-api:/home/zabo/zabo_api
     command: ./home/zabo/zabo_api/start_up.sh
     ports: 
       - "8080:8080"
