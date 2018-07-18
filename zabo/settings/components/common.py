@@ -51,17 +51,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'zabo.wsgi.application'
 
-INTERNAL_IPS = ('127.0.0.1',)
 
-ALLOWED_HOSTS = ["http://localhost:8080"]
+CORS_ORIGIN_ALLOW_ALL = True
+INTERNAL_IPS = ('127.0.0.1', )
 
-# django-cors-headers
-# #
-# CORS_ORIGIN_WHITELIST = (
-#
-#     # 'localhost:8080',
-#
-#
-# )
+ALLOWD_HOSTS = ['*']
 
 CORS_ORIGIN_ALLOW_ALL = True
