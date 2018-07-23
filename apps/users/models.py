@@ -59,7 +59,7 @@ class ZaboUser(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=45, blank=True)
 
     following = models.ManyToManyField("self", blank=True, related_name="follower", symmetrical=False)
-    sid = models.CharField(max_length=30)  # 서비스에 대해 고유하게 부여받은 ID
+    sid = models.CharField(max_length=30, default=0)  # 서비스에 대해 고유하게 부여받은 ID
     point = 0
     point_updated_time = None
 

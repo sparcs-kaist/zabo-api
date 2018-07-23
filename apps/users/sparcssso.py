@@ -1,8 +1,10 @@
+import binascii
 import requests
 import hmac
 import time
 import os
 import urllib
+import json
 
 
 # SPARCS sso v2 Client Version 1.1
@@ -10,7 +12,7 @@ import urllib
 # Made by SPARCS SSO Team
 
 class Client:
-    SERVER_DOMAIN = 'https://sparcs.sso.kaist.ac.kr/'
+    SERVER_DOMAIN = 'https://sparcssso.kaist.ac.kr/'
     BETA_DOMAIN = 'https://ssobeta.sparcs.org/'
     DOMAIN = None
 
@@ -55,13 +57,15 @@ class Client:
             raise RuntimeError('NOT_JSON_OBJECT')
 
     def get_login_params(self):
-        state = os.urandom(10).encode('hex')
+        state = binascii.hexlify(os.urandom(10))
+        print(state)
+        newstate = json.dumps(state.decode("utf-8"))
+        print(newstate)
         params = {
             'client_id': self.client_id,
-            'state': state,
+            'state': newstate,
         }
-
-        return ['%s?%s' % (self.URLS['token_require'], urllib.urlencode(params)), state]
+        return ['%s?%s' % (self.URLS['token_require'], urllib.parse.urlencode(params)), newstate]
 
     def get_user_info(self, code):
         timestamp = int(time.time())
