@@ -53,6 +53,7 @@ class ZaboUser(AbstractBaseUser, PermissionsMixin):
     profile_image = models.FileField(upload_to='users/profile/')
     phone = models.CharField(max_length=45, blank=True)
     following = models.ManyToManyField("self", blank=True, related_name="follower", symmetrical = False)
+    sid = models.CharField(max_length=30, default=0)  # 서비스에 대해 고유하게 부여받은 ID
 
     def get_participating_zaboes(self):
         pass
