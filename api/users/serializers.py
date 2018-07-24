@@ -12,7 +12,7 @@ class ZabouserFollowingSerializer(serializers.ModelSerializer):
         )
 
 class ZabouserSerializer(serializers.ModelSerializer):
-    following = ZabouserFollowingSerializer(many=True)
+    following = ZabouserFollowingSerializer(many=True, read_only=True)
 
     class Meta:
         model = ZaboUser
