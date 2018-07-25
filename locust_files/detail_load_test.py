@@ -3,11 +3,6 @@ import json
 from locust.clients import HttpSession
 
 class UserBehavior(TaskSet):
-    def on_start(self):
-        zabo = self.client.get("/api/zaboes/100/")
-        posters = json.loads(zabo.content)["posters"][0]["image"]
-        print (posters)
-
     @task(1)
     def detail(self):
         zabo = self.client.get("/api/zaboes/100/")
