@@ -1,7 +1,5 @@
 from locust import HttpLocust, TaskSet, task
 
-api_url = "{user}"
-
 class UserBehavior(TaskSet):
     @task(1)
     def list(self):
