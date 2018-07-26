@@ -58,9 +58,9 @@ class Client:
 
     def get_login_params(self):
         state = binascii.hexlify(os.urandom(10))
-        print(state)
-        newstate = json.dumps(state.decode("utf-8"))
-        print(newstate)
+        #print(state)
+        newstate = json.dumps(state.decode('utf-8'))
+        #print(newstate)
         params = {
             'client_id': self.client_id,
             'state': newstate,
@@ -68,9 +68,12 @@ class Client:
         return ['%s?%s' % (self.URLS['token_require'], urllib.parse.urlencode(params)), newstate]
 
     def get_user_info(self, code):
-        timestamp = int(time.time())
-        sign = hmac.new(str(self.secret_key),
-                        '%s%s' % (code, timestamp)).hexdigest()
+        timestamp = str(int(time.time()))
+        print("code: {code}".format(code=code))
+        print("timestamp: {timestamp}".format(timestamp=timestamp))
+        msg = "%s%s" % (code, timestamp)
+        sign = hmac.new(str(self.secret_key).encode('utf-8'),
+                        msg.encode('utf-8')).hexdigest()
 
         params = {
             'client_id': self.client_id,

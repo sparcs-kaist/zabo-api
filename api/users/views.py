@@ -16,6 +16,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from rest_framework.decorators import permission_classes
+from django.contrib.auth.models import User
 import json
 import random
 import os
@@ -74,7 +75,9 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 def login(request):
+    print("login")
     user = request.user
+    print("user is {user}".format(user=user))
     if user.is_authenticated:
         return redirect(request.GET.get('next', '/'))
 
@@ -82,12 +85,13 @@ def login(request):
 
     login_url, state = sso_client.get_login_params()
     request.session['sso_state'] = state
+    #print("state is {state}".format(state=state))
     return HttpResponseRedirect(login_url)
 
 
 @require_http_methods(['GET'])
 def login_callback(request):
-    print(3)
+    print("login_callback")
     next = request.session.pop('next', '/')
     state_before = request.session.get('sso_state', 'default before state')
     state = request.GET.get('state', 'default state')
@@ -99,9 +103,10 @@ def login_callback(request):
 
     code = request.GET.get('code')
     sso_profile = sso_client.get_user_info(code)
+
     username = sso_profile['sid']
 
-    #user_list = User.objects.filter(username=username)
+    user_list = User.objects.filter(username=username)
     try:
         kaist_info = json.loads(sso_profile['kaist_info'])
         student_id = kaist_info.get('ku_std_no')
@@ -111,52 +116,52 @@ def login_callback(request):
     if student_id is None:
         student_id = ''
 
-    # if len(user_list) == 0:
-    #     user = User.objects.create_user(username=username,
-    #                                     email=sso_profile['email'],
-    #                                     password=str(random.getrandbits(32)),
-    #                                     first_name=sso_profile['first_name'],
-    #                                     last_name=sso_profile['last_name'])
-    #     user.save()
-    #
-    #     try:
-    #         user_profile = UserProfile.objects.get(student_id=sso_profile['sid'])
-    #         user_profile.user = user
-    #     except:
-    #         user_profile = UserProfile(student_id=student_id, user=user)
-    #
-    #     user_profile.sid = sso_profile['sid']
-    #     user_profile.save()
-    #
-    #     if not settings.DEBUG:
-    #         os.chdir('/var/www/otlplus/')
-    #     os.system('python do_import_user_major.py %s' % student_id)
-    #     os.system('python update_taken_lecture_user.py %s' % student_id)
-    #     OldTimeTable.import_in_for_user(student_id)
-    #
-    #     user = authenticate(username=username)
-    #     login(request, user)
-    #     return redirect(next)
-    # else:
-    #     user = authenticate(username=user_list[0].username)
-    #     user.first_name = sso_profile['first_name']
-    #     user.last_name = sso_profile['last_name']
-    #     user.save()
-    #     user_profile = UserProfile.objects.get(user=user)
-    #     previous_student_id = user_profile.student_id
-    #     user_profile.student_id = student_id
-    #     user_profile.save()
-    #     if previous_student_id != student_id:
-    #         if not settings.DEBUG:
-    #             os.chdir('/var/www/otlplus/')
-    #         os.system('python do_import_user_major.py %s' % student_id)
-    #         os.system('python update_taken_lecture_user.py %s' % student_id)
-    #         OldTimeTable.import_in_for_user(student_id)
-    #     login(request, user)
-    #     return redirect(next)
-    # return render(request, 'session/login_error.html',
-    #               {'error_title': "Login Error",
-    #                'error_message': "No such that user"})
+    if len(user_list) == 0:
+        user = User.objects.create_user(username=username,
+                                        email=sso_profile['email'],
+                                        password=str(random.getrandbits(32)),
+                                        first_name=sso_profile['first_name'],
+                                        last_name=sso_profile['last_name'])
+        user.save()
+
+        try:
+            zabo_user = ZaboUser.objects.get(email=sso_profile['email'])
+            user_profile.user = user
+        except:
+            user_profile = ZaboUser(student_id=student_id, user=user)
+
+        user_profile.sid = sso_profile['sid']
+        user_profile.save()
+
+        if not settings.DEBUG:
+            os.chdir('/var/www/otlplus/')
+        os.system('python do_import_user_major.py %s' % student_id)
+        os.system('python update_taken_lecture_user.py %s' % student_id)
+        OldTimeTable.import_in_for_user(student_id)
+
+        user = authenticate(username=username)
+        login(request, user)
+        return redirect(next)
+    else:
+        user = authenticate(username=user_list[0].username)
+        user.first_name = sso_profile['first_name']
+        user.last_name = sso_profile['last_name']
+        user.save()
+        user_profile = UserProfile.objects.get(user=user)
+        previous_student_id = user_profile.student_id
+        user_profile.student_id = student_id
+        user_profile.save()
+        if previous_student_id != student_id:
+            if not settings.DEBUG:
+                os.chdir('/var/www/otlplus/')
+            os.system('python do_import_user_major.py %s' % student_id)
+            os.system('python update_taken_lecture_user.py %s' % student_id)
+            OldTimeTable.import_in_for_user(student_id)
+        login(request, user)
+        return redirect(next)
+    return render(request, 'session/login_error.html',
+                  {'error_title': "Login Error",
+                   'error_message': "No such that user"})
 
 @permission_classes((IsAuthenticated, ))
 def logout(request):
