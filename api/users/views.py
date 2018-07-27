@@ -12,11 +12,12 @@ from rest_framework.filters import SearchFilter, OrderingFilter
 from apps.users.sparcssso import Client
 from zabo.settings.components.secret import SSO_CLIENT_ID, SSO_SECRET_KEY, SSO_IS_BETA
 from rest_framework.generics import RetrieveAPIView
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from rest_framework.decorators import permission_classes
-from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, logout
+from django.contrib.auth import login as login_auth
 import json
 import random
 import os
@@ -75,9 +76,9 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 def login(request):
-    print("login")
+    # print("login")
     user = request.user
-    print("user is {user}".format(user=user))
+    # print("user is {user}".format(user=user))
     if user.is_authenticated:
         return redirect(request.GET.get('next', '/'))
 
@@ -85,88 +86,100 @@ def login(request):
 
     login_url, state = sso_client.get_login_params()
     request.session['sso_state'] = state
-    #print("state is {state}".format(state=state))
+    # print("state is {state}".format(state=state))
     return HttpResponseRedirect(login_url)
 
 
 @require_http_methods(['GET'])
 def login_callback(request):
-    print("login_callback")
+    # print("login_callback")
     next = request.session.pop('next', '/')
     state_before = request.session.get('sso_state', 'default before state')
     state = request.GET.get('state', 'default state')
 
     if state_before != state:
-        return render(request, 'session/login_error.html',
-                      {'error_title': "Login Error",
+        return JsonResponse(status=200,
+                            data={'error_title': "Login Error",
                        'error_message': "Invalid login"})
+        # return render(request, 'session/login_error.html',
+        #               {'error_title': "Login Error",
+        #                'error_message': "Invalid login"})
 
     code = request.GET.get('code')
     sso_profile = sso_client.get_user_info(code)
 
-    username = sso_profile['sid']
+    email = sso_profile['email']
 
-    user_list = User.objects.filter(username=username)
-    try:
-        kaist_info = json.loads(sso_profile['kaist_info'])
-        student_id = kaist_info.get('ku_std_no')
-    except:
-        student_id = ''
-
-    if student_id is None:
-        student_id = ''
+    user_list = ZaboUser.objects.filter(email=email)
 
     if len(user_list) == 0:
-        user = User.objects.create_user(username=username,
-                                        email=sso_profile['email'],
-                                        password=str(random.getrandbits(32)),
-                                        first_name=sso_profile['first_name'],
-                                        last_name=sso_profile['last_name'])
+        user = ZaboUser.objects.create_user(email=email, password=email)
+        user.first_name = sso_profile['first_name']
+        user.last_name = sso_profile['last_name']
+        user.gender = sso_profile['gender']
+        user.sid = sso_profile['sid']
         user.save()
 
-        try:
-            zabo_user = ZaboUser.objects.get(email=sso_profile['email'])
-            user_profile.user = user
-        except:
-            user_profile = ZaboUser(student_id=student_id, user=user)
-
-        user_profile.sid = sso_profile['sid']
-        user_profile.save()
-
-        if not settings.DEBUG:
-            os.chdir('/var/www/otlplus/')
-        os.system('python do_import_user_major.py %s' % student_id)
-        os.system('python update_taken_lecture_user.py %s' % student_id)
-        OldTimeTable.import_in_for_user(student_id)
-
-        user = authenticate(username=username)
-        login(request, user)
-        return redirect(next)
+        # user = authenticate(email=email)
+        login_auth(request, user)
+        return JsonResponse(status=200,
+                            data={'message': "Login success, new zabo user"})
+        #return redirect(next)
     else:
-        user = authenticate(username=user_list[0].username)
+        user = user_list[0]
         user.first_name = sso_profile['first_name']
         user.last_name = sso_profile['last_name']
         user.save()
-        user_profile = UserProfile.objects.get(user=user)
-        previous_student_id = user_profile.student_id
-        user_profile.student_id = student_id
-        user_profile.save()
-        if previous_student_id != student_id:
-            if not settings.DEBUG:
-                os.chdir('/var/www/otlplus/')
-            os.system('python do_import_user_major.py %s' % student_id)
-            os.system('python update_taken_lecture_user.py %s' % student_id)
-            OldTimeTable.import_in_for_user(student_id)
-        login(request, user)
-        return redirect(next)
-    return render(request, 'session/login_error.html',
-                  {'error_title': "Login Error",
-                   'error_message': "No such that user"})
+        login_auth(request, user)
+        return JsonResponse(status=200,
+                            data={'message': "Login success, existed zabo user"})
+        #return redirect(next)
 
-@permission_classes((IsAuthenticated, ))
+    return JsonResponse(status=200,
+                        data={'error_title': "Login Error",
+                              'error_message': "No such that user"})
+    # return render(request, 'session/login_error.html',
+    #               {'error_title': "Login Error",
+    #                'error_message': "No such that user"})
+
+
+@permission_classes((IsAuthenticated,))
 def logout(request):
-    return
+    if request.user.is_authenticated:
+        sid = ZaboUser.objects.get(email=request.email).sid
+        redirect_url = request.GET.get('next', request.build_absolute_uri('/'))
+        logout_url = sso_client.get_logout_url(sid, redirect_url)
+        logout(request)
+        request.session['visited'] = True
+        return redirect(logout_url)
+    return redirect("/main")
 
-@permission_classes((IsAuthenticated, ))
+
+@permission_classes((IsAuthenticated,))
 def unregister(request):
-    return
+    if request.method != 'POST':
+        return JsonResponse(status=200,
+                            data={'error_title': "Unregister Error",
+                                  'error_message': "please try again"})
+        # return render(request, 'session/login_error.html',
+        #               {'error_title': "Unregister Error",
+        #                'error_message': "please try again"})
+
+    user = request.user
+    zabo_user = ZaboUser.objects.get(user=user)
+
+    sid = zabo_user.sid
+    result = sso_client.do_unregister(sid)
+    if not result:
+        return JsonResponse(status=200,
+                            data={'error_title': "Unregister Error",
+                                  'error_message': "please try again"})
+        # return render(request, 'session/login_error.html',
+        #               {'error_title': "Unregister Error",
+        #                'error_message': "please try again"})
+
+    zabo_user.delete()
+    user.delete()
+    logout(request)
+
+    return JsonResponse(status=200, data={})

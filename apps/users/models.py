@@ -15,7 +15,8 @@ class ZaboUserManager(BaseUserManager):
         user = self.model(email=email,
                           is_staff=is_staff,
                           is_superuser=is_superuser, **extra_fields)
-        user.set_password(password)
+        print("password: {pw}".format(pw=password))
+        user.set_password('123')
         user.save(using=self._db)
 
         return user

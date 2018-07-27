@@ -71,7 +71,7 @@ class Client:
         timestamp = str(int(time.time()))
         print("code: {code}".format(code=code))
         print("timestamp: {timestamp}".format(timestamp=timestamp))
-        msg = "%s%s" % (code, timestamp)
+        msg = '%s%s' % (code, timestamp)
         sign = hmac.new(str(self.secret_key).encode('utf-8'),
                         msg.encode('utf-8')).hexdigest()
 
@@ -85,8 +85,9 @@ class Client:
 
     def get_logout_url(self, sid, redirect_uri):
         timestamp = int(time.time())
-        sign = hmac.new(str(self.secret_key),
-                        '%s%s%s' % (sid, redirect_uri, timestamp)).hexdigest()
+        msg = '%s%s%s' % (sid, redirect_uri, timestamp)
+        sign = hmac.new(str(self.secret_key).encode('utf-8'),
+                        msg.encode('utf-8')).hexdigest()
 
         params = {
             'client_id': self.client_id,
@@ -99,8 +100,9 @@ class Client:
 
     def do_unregister(self, sid):
         timestamp = int(time.time())
-        sign = hmac.new(str(self.secret_key),
-                        '%s%s' % (sid, timestamp)).hexdigest()
+        msg = '%s%s' % (sid, timestamp)
+        sign = hmac.new(str(self.secret_key).encode('utf-8'),
+                        msg.encode('utf-8')).hexdigest()
 
         params = {
             'client_id': self.client_id,
@@ -115,8 +117,9 @@ class Client:
 
     def modify_point(self, sid, delta, message, lower_bound=0):
         timestamp = int(time.time())
-        sign = hmac.new(str(self.secret_key),
-                        '%s%s%s%s' % (sid, delta, lower_bound, timestamp)).hexdigest()
+        msg = '%s%s%s%s' % (sid, delta, lower_bound, timestamp)
+        sign = hmac.new(str(self.secret_key).encode('utf-8'),
+                        msg.encode('utf-8')).hexdigest()
 
         params = {
             'client_id': self.client_id,
