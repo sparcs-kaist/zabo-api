@@ -131,6 +131,8 @@ def login_callback(request):
         user.last_name = sso_profile['last_name']
         user.save()
         login_auth(request, user)
+        print("password: {p}".format(p=email))
+        print("check password: {p}".format(p=user.check_password(email)))
         return JsonResponse(status=200,
                             data={'message': "Login success, existed zabo user"})
         #return redirect(next)

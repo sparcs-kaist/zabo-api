@@ -16,7 +16,7 @@ class ZaboUserManager(BaseUserManager):
                           is_staff=is_staff,
                           is_superuser=is_superuser, **extra_fields)
         print("password: {pw}".format(pw=password))
-        user.set_password('123')
+        user.set_password(password)
         user.save(using=self._db)
 
         return user
@@ -25,7 +25,7 @@ class ZaboUserManager(BaseUserManager):
         return self.get(email=email_)
 
     def create_user(self, email, password=None):
-        return self._create_user(email, password, False, False, is_active=False)
+        return self._create_user(email, password, False, False, is_active=True)
 
     def create_superuser(self, email, password):
         return self._create_user(email, password, True, True, is_active=True)
