@@ -1,0 +1,26 @@
+version: '2.0'
+services:
+  mariadb:
+    container_name: zabo_db
+    image: mariadb:latest
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    volumes:
+      - /home/jara/docker/mariadb/data:/var/lib/mysql
+      - /home/jara/docker/mariadb/conf.d:/etc/mysql/conf.d
+  web:
+    container_name: zabo_server
+    image: zabo-base:0.1
+    restart: always
+    volumes:
+      - /home/jara/zabo/zabo-api:/home/zabo/zabo_api
+    command: ./home/zabo/zabo_api/start_up.sh
+    ports: 
+      - "8080:8080"
+    links:
+      - mariadb
+
