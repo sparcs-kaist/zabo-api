@@ -78,9 +78,9 @@ class UserViewSet(viewsets.ModelViewSet):
 # front end base url
 base_url = "http://zabo-web.azurewebsites.net"
 # url after login
-url_after_login = base_url
+url_after_login = base_url + "/login/"
 # url when get error
-url_when_error = base_url
+url_when_error = base_url + "/error/"
 # url after logout
 url_after_logout = base_url
 
