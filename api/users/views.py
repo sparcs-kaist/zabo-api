@@ -74,42 +74,43 @@ class UserViewSet(viewsets.ModelViewSet):
         user.unfollow_others(nickname)
         return Response({'Message': 'You have successfully unfollow'}, status=status.HTTP_201_CREATED)
 
+# TODO
+# front end base url
+base_url = "http://zabo-web.azurewebsites.net"
+# url after login
+url_after_login = base_url
+# url when get error
+url_when_error = base_url
+# url after logout
+url_after_logout = base_url
+
 
 def login(request):
-    # print("login")
     user = request.user
-    # print("user is {user}".format(user=user))
+    print("user: {user}".format(user=user))
+    print("user is authenticated: {auth}".format(auth=user.is_authenticated))
     if user.is_authenticated:
-        return redirect(request.GET.get('next', '/'))
-
-    request.session['next'] = request.GET.get('next', '/')
+        return redirect(url_after_login)
 
     login_url, state = sso_client.get_login_params()
     request.session['sso_state'] = state
-    # print("state is {state}".format(state=state))
     return HttpResponseRedirect(login_url)
 
 
 @require_http_methods(['GET'])
 def login_callback(request):
-    # print("login_callback")
-    next = request.session.pop('next', '/')
     state_before = request.session.get('sso_state', 'default before state')
     state = request.GET.get('state', 'default state')
 
+    print("state_before: {state_before}".format(state_before=state_before))
+    print("state: {state}".format(state=state))
     if state_before != state:
-        return JsonResponse(status=200,
-                            data={'error_title': "Login Error",
-                       'error_message': "Invalid login"})
-        # return render(request, 'session/login_error.html',
-        #               {'error_title': "Login Error",
-        #                'error_message': "Invalid login"})
+        return redirect(url_when_error)
 
     code = request.GET.get('code')
     sso_profile = sso_client.get_user_info(code)
-
+    # print(sso_profile)
     email = sso_profile['email']
-
     user_list = ZaboUser.objects.filter(email=email)
 
     if len(user_list) == 0:
@@ -118,24 +119,27 @@ def login_callback(request):
         user.last_name = sso_profile['last_name']
         user.gender = sso_profile['gender']
         user.sid = sso_profile['sid']
+        #TODO sso유저 닉네임 설정
+        user.nickName = email[0:15]
         user.save()
 
         # user = authenticate(email=email)
-        login_auth(request, user)
-        return JsonResponse(status=200,
-                            data={'message': "Login success, new zabo user"})
-        #return redirect(next)
+        # login_auth(request, user)
+        return redirect(url_after_login + email)
+        # return JsonResponse(status=200,
+        #                     data={'message': "Login success, new zabo user",
+        #                           'email': email})
     else:
         user = user_list[0]
         user.first_name = sso_profile['first_name']
         user.last_name = sso_profile['last_name']
         user.save()
-        login_auth(request, user)
-        print("password: {p}".format(p=email))
-        print("check password: {p}".format(p=user.check_password(email)))
-        return JsonResponse(status=200,
-                            data={'message': "Login success, existed zabo user"})
-        #return redirect(next)
+        # login_auth(request, user)
+
+        return redirect(url_after_login + email)
+        # return JsonResponse(status=200,
+        #                     data={'message': "Login success, existed zabo user",
+        #                           'email': email})
 
     return JsonResponse(status=200,
                         data={'error_title': "Login Error",
@@ -148,13 +152,13 @@ def login_callback(request):
 @permission_classes((IsAuthenticated,))
 def logout(request):
     if request.user.is_authenticated:
-        sid = ZaboUser.objects.get(email=request.email).sid
+        sid = ZaboUser.objects.get(email=request.GET.get('email')).sid
         redirect_url = request.GET.get('next', request.build_absolute_uri('/'))
         logout_url = sso_client.get_logout_url(sid, redirect_url)
         logout(request)
         request.session['visited'] = True
         return redirect(logout_url)
-    return redirect("/main")
+    return redirect(url_after_logout)
 
 
 @permission_classes((IsAuthenticated,))
@@ -182,6 +186,7 @@ def unregister(request):
 
     zabo_user.delete()
     user.delete()
-    logout(request)
+    #logout(request)
 
-    return JsonResponse(status=200, data={})
+    return JsonResponse(status=200,
+                        data={'message': "Unregister successfully"})
