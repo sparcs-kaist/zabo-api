@@ -42,20 +42,22 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = ('')
 
     def list(self, request):
+        print("Zabouser list")
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
         serializer = ZabouserListSerializer(page, many=True, context={
             'request': request,
         })
-        zabouser = ZaboUser.objects.filter(email=request.user).get()
         for user in serializer.data:
             user.update({'is_following': False})
-        if not (request.user.is_anonymous or zabouser.following.count() == 0):
-            for user in serializer.data:
-                for following in zabouser.following.all():
-                    if following.email == user['email']:
-                        user.update({'is_following': True})
-                        break
+        if not request.user.is_anonymous:	
+            zabouser = ZaboUser.objects.filter(email=request.user).get() 
+            if not zabouser.following.count() == 0:
+                for user in serializer.data:
+                    for following in zabouser.following.all():
+                        if following.email == user['email']:
+                            user.update({'is_following': True})
+                            break
         if page is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
