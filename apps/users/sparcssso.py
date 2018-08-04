@@ -96,7 +96,7 @@ class Client:
             'redirect_uri': redirect_uri,
             'sign': sign,
         }
-        return '%s?%s' % (self.URLS['logout'], urllib.urlencode(params))
+        return '%s?%s' % (self.URLS['logout'], urllib.parse.urlencode(params))
 
     def do_unregister(self, sid):
         timestamp = int(time.time())

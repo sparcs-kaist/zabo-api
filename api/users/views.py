@@ -16,7 +16,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_http_methods
 from rest_framework.decorators import permission_classes
-from django.contrib.auth import authenticate, logout
+from django.contrib.auth import authenticate
 from django.contrib.auth import login as login_auth
 import json
 import random
@@ -84,9 +84,8 @@ class UserViewSet(viewsets.ModelViewSet):
         user.unfollow_others(nickname)
         return Response({'Message': 'You have successfully unfollow'}, status=status.HTTP_201_CREATED)
 
-# TODO
 # front end base url
-base_url = "http://zabo-web.azurewebsites.net"
+base_url = "http://zabo.azurewebsites.net"
 # url after login
 url_after_login = base_url + "/login/"
 # url when get error
@@ -104,7 +103,7 @@ def login(request):
 
     login_url, state = sso_client.get_login_params()
     request.session['sso_state'] = state
-    return HttpResponseRedirect(login_url)
+    return redirect(login_url)
 
 
 @require_http_methods(['GET'])
@@ -131,6 +130,7 @@ def login_callback(request):
         user.sid = sso_profile['sid']
         #TODO sso유저 닉네임 설정
         user.nickName = email[0:15]
+        print("user's sid: {sid}".format(sid=user.sid))
         user.save()
 
         # user = authenticate(email=email)
@@ -161,11 +161,17 @@ def login_callback(request):
 
 @permission_classes((IsAuthenticated,))
 def logout(request):
+    print("logout")
+    email = request.GET.get('email')
+    sid = ZaboUser.objects.get(email=email).sid
+    logout_url = sso_client.get_logout_url(sid, url_after_logout)
+    return redirect(logout_url)
+
     if request.user.is_authenticated:
         sid = ZaboUser.objects.get(email=request.GET.get('email')).sid
-        redirect_url = request.GET.get('next', request.build_absolute_uri('/'))
-        logout_url = sso_client.get_logout_url(sid, redirect_url)
-        logout(request)
+        #redirect_url = request.GET.get('next', request.build_absolute_uri('/'))
+        logout_url = sso_client.get_logout_url(sid, url_after_logout)
+        #logout(request)
         request.session['visited'] = True
         return redirect(logout_url)
     return redirect(url_after_logout)
@@ -176,7 +182,7 @@ def unregister(request):
     if request.method != 'POST':
         return JsonResponse(status=200,
                             data={'error_title': "Unregister Error",
-                                  'error_message': "please try again"})
+                                  'error_message': "please try again1"})
         # return render(request, 'session/login_error.html',
         #               {'error_title': "Unregister Error",
         #                'error_message': "please try again"})
@@ -189,7 +195,7 @@ def unregister(request):
     if not result:
         return JsonResponse(status=200,
                             data={'error_title': "Unregister Error",
-                                  'error_message': "please try again"})
+                                  'error_message': "please try again2"})
         # return render(request, 'session/login_error.html',
         #               {'error_title': "Unregister Error",
         #                'error_message': "please try again"})
