@@ -8,6 +8,7 @@ class ZabouserFollowingSerializer(serializers.ModelSerializer):
         model = ZaboUser
         fields = (
             'id',
+            'nickName',
             'profile_image',
         )
 
