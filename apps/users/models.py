@@ -50,7 +50,7 @@ class ZaboUser(AbstractBaseUser, PermissionsMixin):
     is_deleted = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
     joined_date = models.DateField(auto_now_add=True)
-    profile_image = models.FileField(upload_to='users/profile/')
+    profile_image = models.FileField(upload_to='users/profile/', blank=True, null=True)
     phone = models.CharField(max_length=45, blank=True)
     following = models.ManyToManyField("self", blank=True, related_name="follower", symmetrical = False)
     sid = models.CharField(max_length=30, default=0)  # 서비스에 대해 고유하게 부여받은 ID
