@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from api.users.serializers import ZabouserSerializer, ZabouserListSerializer
+from api.users.serializers import ZabouserSerializer, ZabouserListSerializer, ZabouserCreateSerializer
 from apps.users.models import ZaboUser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import action
@@ -9,11 +9,11 @@ from apps.notifications.helpers import SomeoneFollowingNotificatinoHelper
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.generics import RetrieveAPIView
-
+from api.common.viewset import ActionAPIViewSet
+from zabo.common.permissions import ZaboUserPermission
 
 # Create your views here.
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
     """
         This viewset automatically provides `list`, `create`, `retrieve`,
         `update` and `destroy` actions.
@@ -26,7 +26,11 @@ class UserViewSet(viewsets.ModelViewSet):
     search_fields = ('nickName', 'email')
     # 나중에 검색 결과 순서에 대해 이야기 해보아야 함
     ordering_fields = ('nickName', 'email', 'joined_date')
-    permission_classes = ('')
+    permission_classes = (ZaboUserPermission, )
+    action_serializer_class = {
+        'create': ZabouserCreateSerializer,
+    }
+
 
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
