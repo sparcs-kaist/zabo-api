@@ -85,7 +85,8 @@ class UserViewSet(viewsets.ModelViewSet):
         return Response({'Message': 'You have successfully unfollow'}, status=status.HTTP_201_CREATED)
 
 # front end base url
-base_url = "http://zabo.azurewebsites.net"
+#base_url = "http://zabo.azurewebsites.net"
+base_url = "http://localhost:8080"
 # url after login
 url_after_login = base_url + "/login/"
 # url when get error
@@ -118,11 +119,12 @@ def login_callback(request):
 
     code = request.GET.get('code')
     sso_profile = sso_client.get_user_info(code)
-    # print(sso_profile)
+    print(sso_profile)
     email = sso_profile['email']
     user_list = ZaboUser.objects.filter(email=email)
 
     if len(user_list) == 0:
+        print("new user, password : {pw}".format(pw=email))
         user = ZaboUser.objects.create_user(email=email, password=email)
         user.first_name = sso_profile['first_name']
         user.last_name = sso_profile['last_name']
@@ -140,9 +142,11 @@ def login_callback(request):
         #                     data={'message': "Login success, new zabo user",
         #                           'email': email})
     else:
+        print("user exists")
         user = user_list[0]
         user.first_name = sso_profile['first_name']
         user.last_name = sso_profile['last_name']
+        user.sid = sso_profile['sid']
         user.save()
         # login_auth(request, user)
 
