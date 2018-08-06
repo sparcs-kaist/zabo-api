@@ -70,5 +70,5 @@ class UserViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
     def unfollowOther(self, request):
         user = request.user
         nickname = request.data["nickname"]
-        user.unfollow_others(nickname)
+        user.unfollow_other(nickname)
         return Response({'Message': 'You have successfully unfollow'}, status=status.HTTP_201_CREATED)
