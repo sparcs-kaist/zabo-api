@@ -38,10 +38,11 @@ class UserViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         serializer = ZabouserListSerializer(page, many=True, context={
             'request': request,
         })
-        zabouser = ZaboUser.objects.filter(email=request.user).get()
         for user in serializer.data:
             user.update({'is_following': False})
-        if not (request.user.is_anonymous or zabouser.following.count() == 0):
+        if not request.user.is_anonymous:
+            zabouser = ZaboUser.objects.filter(email=request.user).get()
+            if not zabouser.following.count() == 0:
             for user in serializer.data:
                 for following in zabouser.following.all():
                     if following.email == user['email']:
