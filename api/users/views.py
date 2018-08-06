@@ -43,11 +43,11 @@ class UserViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         if not request.user.is_anonymous:
             zabouser = ZaboUser.objects.filter(email=request.user).get()
             if not zabouser.following.count() == 0:
-            for user in serializer.data:
-                for following in zabouser.following.all():
-                    if following.email == user['email']:
-                        user.update({'is_following': True})
-                        break
+                for user in serializer.data:
+                    for following in zabouser.following.all():
+                        if following.email == user['email']:
+                            user.update({'is_following': True})
+                            break
         if page is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
