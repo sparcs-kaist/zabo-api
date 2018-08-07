@@ -98,8 +98,6 @@ url_after_logout = base_url
 
 def login(request):
     user = request.user
-    print("user: {user}".format(user=user))
-    print("user is authenticated: {auth}".format(auth=user.is_authenticated))
     if user.is_authenticated:
         return redirect(url_after_login)
 
@@ -112,20 +110,16 @@ def login(request):
 def login_callback(request):
     state_before = request.session.get('sso_state', 'default before state')
     state = request.GET.get('state', 'default state')
-
-    print("state_before: {state_before}".format(state_before=state_before))
-    print("state: {state}".format(state=state))
     if state_before != state:
         return redirect(url_when_error)
 
     code = request.GET.get('code')
     sso_profile = sso_client.get_user_info(code)
-    print(sso_profile)
+    #print(sso_profile)
     email = sso_profile['email']
     user_list = ZaboUser.objects.filter(email=email)
 
     if len(user_list) == 0:
-        print("new user, password : {pw}".format(pw=email))
         user = ZaboUser.objects.create_user(email=email, password=email)
         user.first_name = sso_profile['first_name']
         user.last_name = sso_profile['last_name']
@@ -136,12 +130,7 @@ def login_callback(request):
         print("user's sid: {sid}".format(sid=user.sid))
         user.save()
 
-        # user = authenticate(email=email)
-        # login_auth(request, user)
         return redirect(url_after_login + email)
-        # return JsonResponse(status=200,
-        #                     data={'message': "Login success, new zabo user",
-        #                           'email': email})
     else:
         print("user exists")
         user = user_list[0]
@@ -149,19 +138,12 @@ def login_callback(request):
         user.last_name = sso_profile['last_name']
         user.sid = sso_profile['sid']
         user.save()
-        # login_auth(request, user)
 
         return redirect(url_after_login + email)
-        # return JsonResponse(status=200,
-        #                     data={'message': "Login success, existed zabo user",
-        #                           'email': email})
 
     return JsonResponse(status=200,
                         data={'error_title': "Login Error",
                               'error_message': "No such that user"})
-    # return render(request, 'session/login_error.html',
-    #               {'error_title': "Login Error",
-    #                'error_message': "No such that user"})
 
 
 @api_view(['GET'])
@@ -175,9 +157,7 @@ def logout(request):
 
     if request.user.is_authenticated:
         sid = ZaboUser.objects.get(email=request.GET.get('email')).sid
-        #redirect_url = request.GET.get('next', request.build_absolute_uri('/'))
         logout_url = sso_client.get_logout_url(sid, url_after_logout)
-        #logout(request)
         request.session['visited'] = True
         return redirect(logout_url)
     return redirect(url_after_logout)
@@ -187,21 +167,10 @@ def logout(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated,])
 def unregister(request):
-    if request.user.is_authenticated:
-        print("authenticated")
-    else:
-        print("not authenticated")
-    
     if request.method != 'POST':
         return JsonResponse(status=200,
                             data={'error_title': "Unregister Error",
                                   'error_message': "please try again1"})
-        # return render(request, 'session/login_error.html',
-        #               {'error_title': "Unregister Error",
-        #                'error_message': "please try again"})
-
-    
-    print("user: {user}".format(user=request.user))
     zabo_user = ZaboUser.objects.get(email=request.user)
 
     sid = zabo_user.sid
@@ -210,13 +179,9 @@ def unregister(request):
         return JsonResponse(status=200,
                             data={'error_title': "Unregister Error",
                                   'error_message': "please try again2"})
-        # return render(request, 'session/login_error.html',
-        #               {'error_title': "Unregister Error",
-        #                'error_message': "please try again"})
 
     zabo_user.delete()
     user.delete()
-    #logout(request)
 
     return JsonResponse(status=200,
                         data={'message': "Unregister successfully"})

@@ -44,10 +44,6 @@ class Client:
 
     def _post_data(self, url, data):
         r = requests.post(url, data, verify=True)
-        print("_post_data")
-        print("url: {url}".format(url=url))
-        print("data: {data}".format(data=data))
-        print("status: {status}".format(status=r.status_code))
         
         if r.status_code == 400:
             raise RuntimeError('INVALID_REQUEST')
@@ -63,9 +59,7 @@ class Client:
 
     def get_login_params(self):
         state = binascii.hexlify(os.urandom(10))
-        #print(state)
         newstate = json.dumps(state.decode('utf-8'))
-        #print(newstate)
         params = {
             'client_id': self.client_id,
             'state': newstate,
@@ -74,8 +68,6 @@ class Client:
 
     def get_user_info(self, code):
         timestamp = str(int(time.time()))
-        print("code: {code}".format(code=code))
-        print("timestamp: {timestamp}".format(timestamp=timestamp))
         msg = '%s%s' % (code, timestamp)
         sign = hmac.new(str(self.secret_key).encode('utf-8'),
                         msg.encode('utf-8')).hexdigest()
