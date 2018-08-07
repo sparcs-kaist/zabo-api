@@ -2,7 +2,7 @@ from rest_framework import viewsets
 from api.users.serializers import ZabouserSerializer, ZabouserListSerializer
 from apps.users.models import ZaboUser
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from rest_framework import status
 from apps.notifications.helpers import SomeoneFollowingNotificatinoHelper
@@ -18,6 +18,7 @@ from django.views.decorators.http import require_http_methods
 from rest_framework.decorators import permission_classes
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as login_auth
+from django.views.decorators.csrf import csrf_exempt
 import json
 import random
 import os
@@ -86,7 +87,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 # front end base url
 #base_url = "http://zabo.azurewebsites.net"
-base_url = "http://localhost:8080"
+base_url = "http://ssal.sparcs.org:16139"
 # url after login
 url_after_login = base_url + "/login/"
 # url when get error
@@ -163,6 +164,7 @@ def login_callback(request):
     #                'error_message': "No such that user"})
 
 
+@api_view(['GET'])
 @permission_classes((IsAuthenticated,))
 def logout(request):
     print("logout")
@@ -181,8 +183,15 @@ def logout(request):
     return redirect(url_after_logout)
 
 
-@permission_classes((IsAuthenticated,))
+@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsAuthenticated,])
 def unregister(request):
+    if request.user.is_authenticated:
+        print("authenticated")
+    else:
+        print("not authenticated")
+    
     if request.method != 'POST':
         return JsonResponse(status=200,
                             data={'error_title': "Unregister Error",
@@ -191,8 +200,9 @@ def unregister(request):
         #               {'error_title': "Unregister Error",
         #                'error_message': "please try again"})
 
-    user = request.user
-    zabo_user = ZaboUser.objects.get(user=user)
+    
+    print("user: {user}".format(user=request.user))
+    zabo_user = ZaboUser.objects.get(email=request.user)
 
     sid = zabo_user.sid
     result = sso_client.do_unregister(sid)

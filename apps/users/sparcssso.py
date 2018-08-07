@@ -44,6 +44,11 @@ class Client:
 
     def _post_data(self, url, data):
         r = requests.post(url, data, verify=True)
+        print("_post_data")
+        print("url: {url}".format(url=url))
+        print("data: {data}".format(data=data))
+        print("status: {status}".format(status=r.status_code))
+        
         if r.status_code == 400:
             raise RuntimeError('INVALID_REQUEST')
         elif r.status_code == 403:
