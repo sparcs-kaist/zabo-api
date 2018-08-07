@@ -8,6 +8,7 @@ class ZabouserFollowingSerializer(serializers.ModelSerializer):
         model = ZaboUser
         fields = (
             'id',
+            'nickName',
             'profile_image',
         )
 
@@ -32,3 +33,18 @@ class ZabouserListSerializer(serializers.HyperlinkedModelSerializer):
             'nickName',
             'profile_image',
         )
+
+
+class ZabouserCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ZaboUser
+        fields = (
+            'email',
+            'nickName',
+            'first_name',
+            'last_name',
+            'gender',
+            'profile_image',
+            'phone',
+        )
+

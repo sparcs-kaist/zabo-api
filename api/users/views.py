@@ -1,5 +1,5 @@
 from rest_framework import viewsets
-from api.users.serializers import ZabouserSerializer, ZabouserListSerializer
+from api.users.serializers import ZabouserSerializer, ZabouserListSerializer, ZabouserCreateSerializer
 from apps.users.models import ZaboUser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import action, api_view
@@ -19,15 +19,17 @@ from rest_framework.decorators import permission_classes
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as login_auth
 from django.views.decorators.csrf import csrf_exempt
+from api.common.viewset import ActionAPIViewSet
+from zabo.common.permissions import ZaboUserPermission
 import json
 import random
 import os
 
+
 sso_client = Client(SSO_CLIENT_ID, SSO_SECRET_KEY, SSO_IS_BETA)
 
-
 # Create your views here.
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
     """
         This viewset automatically provides `list`, `create`, `retrieve`,
         `update` and `destroy` actions.
@@ -40,7 +42,11 @@ class UserViewSet(viewsets.ModelViewSet):
     search_fields = ('nickName', 'email')
     # 나중에 검색 결과 순서에 대해 이야기 해보아야 함
     ordering_fields = ('nickName', 'email', 'joined_date')
-    permission_classes = ('')
+    permission_classes = (ZaboUserPermission, )
+    action_serializer_class = {
+        'create': ZabouserCreateSerializer,
+    }
+
 
     def list(self, request):
         print("Zabouser list")
@@ -51,8 +57,10 @@ class UserViewSet(viewsets.ModelViewSet):
         })
         for user in serializer.data:
             user.update({'is_following': False})
-        if not request.user.is_anonymous:	
-            zabouser = ZaboUser.objects.filter(email=request.user).get() 
+        #if not request.user.is_anonymous:	
+        #    zabouser = ZaboUser.objects.filter(email=request.user).get() 
+        if not request.user.is_anonymous:
+            zabouser = ZaboUser.objects.filter(email=request.user).get()
             if not zabouser.following.count() == 0:
                 for user in serializer.data:
                     for following in zabouser.following.all():
@@ -82,7 +90,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def unfollowOther(self, request):
         user = request.user
         nickname = request.data["nickname"]
-        user.unfollow_others(nickname)
+        user.unfollow_other(nickname)
         return Response({'Message': 'You have successfully unfollow'}, status=status.HTTP_201_CREATED)
 
 # front end base url

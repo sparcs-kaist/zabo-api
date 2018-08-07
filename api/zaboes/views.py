@@ -15,7 +15,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
 from apps.notifications.helpers import ReactionNotificatinoHelper, FollowingNotificatinoHelper
 from zabo.common.permissions import IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly
-
+from apps.zaboes.helpers import get_random_zabo
 # Create your views here.
 
 class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
@@ -128,6 +128,17 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         if page is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
+
+    @action(methods=['get'], detail=False)
+    def random(self, request):
+        zabo = get_random_zabo()
+        serializer = self.get_serializer(zabo)
+        if request.user.is_anonymous:
+            new = serializer.data
+            new.update({'is_liked': False})
+            return Response(new)
+        new = serializer.is_liked(request.user, zabo)
+        return Response(new)
 
 
 class CommentViewSet(viewsets.ModelViewSet):

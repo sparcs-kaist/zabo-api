@@ -39,6 +39,26 @@ class IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly(permissions.BasePermission
         return False
 
 
+class ZaboUserPermission(permissions.BasePermission):
+    """
+    Custom permission to only allow owners of an object to edit it.
+    """
+
+    message = "It's not permissioned"
+
+    def has_object_permission(self, request, view, obj):
+        # Read permissions are allowed to any request,
+        # so we'll always allow GET, HEAD or OPTIONS requests.
+        UPDATE_METHODS = ('PUT', 'PATCH')
+
+        if request.method in permissions.SAFE_METHODS or eq(request.method, 'POST'):
+            return True
+        elif eq(request.method, 'DELETE') or request.method in UPDATE_METHODS:
+            return request.user and request.user.is_authenticated and obj.author == request.user
+
+        # Other method does not permissioned.
+        return False
+
 class IsAuthenticated(permissions.IsAuthenticated):
 
     def has_permission(self, request, view):
