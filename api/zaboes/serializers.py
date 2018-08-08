@@ -88,6 +88,7 @@ class ZaboSerializer(serializers.ModelSerializer):
     class Meta:
         model = Zabo
         fields = (
+            'id',
             'author',
             'title',
             'location',
