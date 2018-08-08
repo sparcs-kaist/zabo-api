@@ -26,11 +26,11 @@ class IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly(permissions.BasePermission
     def has_object_permission(self, request, view, obj):
         # Read permissions are allowed to any request,
         # so we'll always allow GET, HEAD or OPTIONS requests.
-        UPDATE_METHODS = ('PUT', 'PATCH')
+        UPDATE_METHODS = ('PUT', 'PATCH', 'DELETE')
 
         if request.method in permissions.SAFE_METHODS:
             return True
-        elif eq(request.method, 'POST') or eq(request.method, 'DELETE'):
+        elif eq(request.method, 'POST'):
             return  request.user and request.user.is_authenticated
         elif request.method in UPDATE_METHODS:
             return obj.author == request.user
