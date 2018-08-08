@@ -155,7 +155,6 @@ def login_callback(request):
 
 
 @api_view(['GET'])
-@permission_classes((IsAuthenticated,))
 def logout(request):
     print("logout")
     email = request.GET.get('email')
