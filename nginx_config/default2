@@ -18,6 +18,8 @@ server {
     # Django media
     location /media  {
                 alias /home/zabo/zabo_api/media;     # your Django project's media files
+                add_header 'Access-Control-Allow-Origin' '*'; # you should modify it because of security problem
+
     }
 
         location /static {
