@@ -24,7 +24,7 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         `update` and `destroy` actions.
     """
     serializer_class = ZaboSerializer
-    queryset = Zabo.objects.all()
+    queryset = Zabo.objects.filter(is_deleted=False)
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     filter_fields = ('category', 'apply', 'payment')
     search_fields = ('title', 'content', 'location')
@@ -40,6 +40,8 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
     }
 
     permission_classes = (IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly, )
+
+
 
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
@@ -161,6 +163,11 @@ class CommentViewSet(viewsets.ModelViewSet):
         # Make notification to ZaboUser
         ReactionNotificatinoHelper(self.request.user).notify_to_User(zabo)
 
+    def destroy(self, request, pk=None):
+        instance = get_object_or_404(self.queryset, pk=pk)
+        setattr(instance, "is_deleted", True)
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class RecommentViewSet(viewsets.ModelViewSet):
     serializer_class = RecommentSerializer
@@ -180,6 +187,12 @@ class RecommentViewSet(viewsets.ModelViewSet):
         )
         # Make notification to CommentUser
         ReactionNotificatinoHelper(self.request.user).notify_to_User(comment)
+
+    def destroy(self, request, pk=None):
+        instance = get_object_or_404(self.queryset, pk=pk)
+        setattr(instance, "is_deleted", True)
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class PosterViewSet(viewsets.ModelViewSet):
