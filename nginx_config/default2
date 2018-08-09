@@ -17,11 +17,11 @@ server {
 
     # Django media
     location /media  {
-                alias /home/zabo/zabo-api/media;     # your Django project's media files
+                alias /home/zabo/zabo_api/media;     # your Django project's media files
     }
 
         location /static {
-                alias /home/zabo/zabo-api/assets;    # your Django project's static files
+                alias /home/zabo/zabo_api/assets;    # your Django project's static files
         }
 
     # Finally, send all non-media requests to the Django server.
