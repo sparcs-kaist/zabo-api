@@ -1,9 +1,11 @@
 from apps.notifications.models import ZaboReactionNotification, CommentReactionNotification, ZaboFollowingNotification, \
     SomeoneFollowingNotification
-from apps.zaboes.models import Zabo, Comment, Recomment
+from apps.zaboes.models import Zabo, Comment
 from itertools import chain
-from api.zaboes.serializers import ZaboUrlSerializer
 from django.shortcuts import get_object_or_404
+import logging
+
+logger = logging.getLogger(__name__)
 
 # aggregate helper functions to make reaction notification
 class ReactionNotificatinoHelper():
@@ -111,8 +113,8 @@ def get_sorted_noti_list_by_user(user):
 def convert_noti_list_to_queryset(request, noti_list):
     ret = []
     context = {"request": request}
-    try:
-        for noti in noti_list:
+    for noti in noti_list:
+        try:
             ret_noti = {}
             if isinstance(noti, ZaboReactionNotification):
                 # serializer = ZaboUrlSerializer(noti.zabo, context=context)
@@ -146,6 +148,9 @@ def convert_noti_list_to_queryset(request, noti_list):
                 raise StopIteration
             ret_noti["updated_at"] = noti.updated_time
             ret.append(ret_noti)
-        return ret
-    except StopIteration:
-        print("well stopped")
+        except ValueError:
+            logger.warning("user which email=(%s) has no profile image", noti.following.email)
+            continue
+        except StopIteration:
+            logger.warning("Unexpected Type of notification")
+    return ret
