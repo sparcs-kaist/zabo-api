@@ -20,7 +20,7 @@ services:
     image: vk8520/zabo-base:0.4
     restart: always
     volumes:
-      - /home/joyb/zabo/zabo-api:/home/zabo/zabo-api
+      - /home/jara/zabo/zbo_api/zabo_api:/home/zabo/zabo_api
     command: ./home/zabo/zabo_api/start_up.sh
     ports: 
       - "16135:8080"
