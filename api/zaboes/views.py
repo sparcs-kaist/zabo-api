@@ -16,6 +16,8 @@ from rest_framework.decorators import action
 from apps.notifications.helpers import ReactionNotificatinoHelper, FollowingNotificatinoHelper
 from zabo.common.permissions import IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly
 from apps.zaboes.helpers import get_random_zabo
+
+
 # Create your views here.
 
 class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
@@ -26,11 +28,10 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
     serializer_class = ZaboSerializer
     queryset = Zabo.objects.all()
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
-    filter_fields = ('category', 'apply', 'payment')
+    filter_fields = ('category', 'apply', 'payment', 'author')
     search_fields = ('title', 'content', 'location')
     # 나중에 검색 결과 순서에 대해 이야기 해보아야 함
     ordering_fields = ('title', 'likes', 'created_time')
-
 
     action_serializer_class = {
         'create': ZaboCreateSerializer,
