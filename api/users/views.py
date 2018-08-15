@@ -24,7 +24,7 @@ from zabo.common.permissions import ZaboUserPermission
 import json
 import random
 import os
-
+from operator import eq
 
 sso_client = Client(SSO_CLIENT_ID, SSO_SECRET_KEY, SSO_IS_BETA)
 
@@ -131,10 +131,23 @@ def login_callback(request):
         user = ZaboUser.objects.create_user(email=email, password=email)
         user.first_name = sso_profile['first_name']
         user.last_name = sso_profile['last_name']
-        user.gender = sso_profile['gender']
+        sso_gender = sso_profile['gender']
+        if eq(sso_gender, "M"):
+            user.gender = "M"
+        elif eq(sso_gender, "F"):
+            user.gender = "F"
+        elif eq(sso_gender, "H"):
+            user.gender = "B"
+        elif eq(sso_gender, "E"):
+            user.gender = "H"
         user.sid = sso_profile['sid']
         #TODO sso유저 닉네임 설정
         user.nickName = email[0:15]
+        if sso_profile["first_name"]:
+            user.first_name = sso_profile["first_name"]
+
+        user.first_name = sso_profile["first_name"]
+        user.last_name = sso_profile["last_name"]
         print("user's sid: {sid}".format(sid=user.sid))
         user.save()
 

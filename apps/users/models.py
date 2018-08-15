@@ -55,6 +55,7 @@ class ZaboUser(AbstractBaseUser, PermissionsMixin):
     is_superuser = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
+    is_sso = models.BooleanField(default=False)
     joined_date = models.DateField(auto_now_add=True)
     profile_image = models.FileField(upload_to='users/profile/', blank=True, null=True)
     phone = models.CharField(max_length=45, blank=True)
@@ -62,7 +63,6 @@ class ZaboUser(AbstractBaseUser, PermissionsMixin):
     sid = models.CharField(max_length=30, default=0)  # 서비스에 대해 고유하게 부여받은 ID
     point = 0
     point_updated_time = None
-
 
 def get_participating_zaboes(self):
     pass
