@@ -54,7 +54,7 @@ class ZaboUserPermission(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS or eq(request.method, 'POST'):
             return True
         elif eq(request.method, 'DELETE') or request.method in UPDATE_METHODS:
-            return request.user and request.user.is_authenticated and obj.author == request.user
+            return request.user and request.user.is_authenticated and obj== request.user
 
         # Other method does not permissioned.
         return False
