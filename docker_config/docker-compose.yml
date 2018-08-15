@@ -1,7 +1,7 @@
 version: '2.0'
 services:
-  mariadb:
-    container_name: zabo_db
+  db:
+    container_name: zabo_develop_db
     image: mariadb:latest
     restart: always
     environment:
@@ -12,15 +12,18 @@ services:
     volumes:
       - /home/jara/docker/mariadb/data:/var/lib/mysql
       - /home/jara/docker/mariadb/conf.d:/etc/mysql/conf.d
+    ports:
+      - "3306:3306"
+
   web:
-    container_name: zabo_server
-    image: zabo-base:0.1
+    container_name: zabo_develop_server_joyb
+    image: vk8520/zabo-base:0.4
     restart: always
     volumes:
-      - /home/jara/zabo/zabo-api:/home/zabo/zabo_api
+      - /home/jara/zabo/zbo_api/zabo_api:/home/zabo/zabo_api
     command: ./home/zabo/zabo_api/start_up.sh
     ports: 
-      - "8080:8080"
+      - "16135:8080"
     links:
-      - mariadb
+      - db
 

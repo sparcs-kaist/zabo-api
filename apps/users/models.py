@@ -3,6 +3,11 @@ import uuid
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.shortcuts import get_object_or_404
+from apps.users.sparcssso import Client
+from zabo.settings.components.secret import SSO_CLIENT_ID, SSO_SECRET_KEY, SSO_IS_BETA
+
+sso_client = Client(SSO_CLIENT_ID, SSO_SECRET_KEY, is_beta=SSO_IS_BETA)
+
 
 class ZaboUserManager(BaseUserManager):
 
@@ -10,6 +15,7 @@ class ZaboUserManager(BaseUserManager):
         user = self.model(email=email,
                           is_staff=is_staff,
                           is_superuser=is_superuser, **extra_fields)
+        print("password: {pw}".format(pw=password))
         user.set_password(password)
         user.save(using=self._db)
 
@@ -19,7 +25,7 @@ class ZaboUserManager(BaseUserManager):
         return self.get(email=email_)
 
     def create_user(self, email, password=None):
-        return self._create_user(email, password, False, False, is_active=False)
+        return self._create_user(email, password, False, False, is_active=True)
 
     def create_superuser(self, email, password):
         return self._create_user(email, password, True, True, is_active=True)
@@ -54,16 +60,31 @@ class ZaboUser(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=45, blank=True)
     following = models.ManyToManyField("self", blank=True, related_name="follower", symmetrical = False)
     sid = models.CharField(max_length=30, default=0)  # 서비스에 대해 고유하게 부여받은 ID
+    point = 0
+    point_updated_time = None
 
-    def get_participating_zaboes(self):
-        pass
 
-    def follow_other(self, nickname):
-        following_user = get_object_or_404(ZaboUser, nickName=nickname)
-        self.following.add(following_user)
-        self.save()
+def get_participating_zaboes(self):
+    pass
 
-    def unfollow_other(self, nickname):
-        following_user = get_object_or_404(ZaboUser, nickName=nickname)
-        self.following.remove(following_user)
-        self.save()
+
+def follow_other(self, nickname):
+    following_user = get_object_or_404(ZaboUser, nickName=nickname)
+    self.following.add(following_user)
+    self.save()
+
+
+def unfollow_other(self, nickname):
+    following_user = get_object_or_404(ZaboUser, nickName=nickname)
+    self.following.remove(following_user)
+    self.save()
+
+
+def get_point(self):
+    self.point = sso_client.get_point(self.sid)
+    return self.point
+
+
+def add_point(self, delta, message):
+    result = sso_client.modify_point(self.sid, delta, message, 0)
+    return result
