@@ -142,7 +142,7 @@ def login_callback(request):
             user.gender = "E"
         user.sid = sso_profile['sid']
         #TODO sso유저 닉네임 설정
-        user.nickName = email.split("@")[0]
+        user.nickName = email.split('@')[0]
         if sso_profile["first_name"]:
             user.first_name = sso_profile["first_name"]
         else:
@@ -152,6 +152,7 @@ def login_callback(request):
         else:
             user.last_name = "blank"
         print("user's sid: {sid}".format(sid=user.sid))
+        user.is_sso = True
         user.save()
 
         return redirect(url_after_login + email)
