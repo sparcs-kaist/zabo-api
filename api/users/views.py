@@ -162,6 +162,7 @@ def login_callback(request):
         user.first_name = sso_profile['first_name']
         user.last_name = sso_profile['last_name']
         user.sid = sso_profile['sid']
+        user.is_sso = True
         user.save()
 
         return redirect(url_after_login + email)
