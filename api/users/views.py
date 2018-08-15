@@ -139,15 +139,18 @@ def login_callback(request):
         elif eq(sso_gender, "H"):
             user.gender = "B"
         elif eq(sso_gender, "E"):
-            user.gender = "H"
+            user.gender = "E"
         user.sid = sso_profile['sid']
         #TODO sso유저 닉네임 설정
-        user.nickName = email[0:15]
+        user.nickName = email.split("@")
         if sso_profile["first_name"]:
             user.first_name = sso_profile["first_name"]
-
-        user.first_name = sso_profile["first_name"]
-        user.last_name = sso_profile["last_name"]
+        else:
+            user.first_name = "blank"
+        if sso_profile["last_name"]:
+            user.last_name = sso_profile["last_name"]
+        else:
+            user.last_name = "blank"
         print("user's sid: {sid}".format(sid=user.sid))
         user.save()
 
