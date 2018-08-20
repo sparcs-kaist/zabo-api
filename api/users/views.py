@@ -25,6 +25,8 @@ import json
 import random
 import os
 from operator import eq
+from zabo.settings.components.common import base_url
+from rest_framework_jwt.settings import api_settings
 
 sso_client = Client(SSO_CLIENT_ID, SSO_SECRET_KEY, SSO_IS_BETA)
 
@@ -40,7 +42,7 @@ class UserViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
     filter_backends = (DjangoFilterBackend, SearchFilter, OrderingFilter)
     filter_fields = ('nickName',)
     search_fields = ('nickName', 'email')
-    # 나중에 검색 결과 순서에 대해 이야기 해보아야 함
+    # 나중에 검색 결과s 순서에 대해 이야기 해보아야 함
     ordering_fields = ('nickName', 'email', 'joined_date')
     permission_classes = (ZaboUserPermission, )
     action_serializer_class = {
@@ -94,8 +96,6 @@ class UserViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         return Response({'Message': 'You have successfully unfollow'}, status=status.HTTP_201_CREATED)
 
 # front end base url
-#base_url = "http://zabo.azurewebsites.net"
-base_url = "http://ssal.sparcs.org:16139"
 # url after login
 url_after_login = base_url + "/login/"
 # url when get error
@@ -129,8 +129,7 @@ def login_callback(request):
 
     if len(user_list) == 0:
         user = ZaboUser.objects.create_user(email=email, password=email)
-        user.first_name = sso_profile['first_name']
-        user.last_name = sso_profile['last_name']
+
         sso_gender = sso_profile['gender']
         if eq(sso_gender, "M"):
             user.gender = "M"
@@ -155,17 +154,32 @@ def login_callback(request):
         user.is_sso = True
         user.save()
 
-        return redirect(url_after_login + email)
     else:
         print("user exists")
         user = user_list[0]
+        user.nickName = email.split('@')[0]
         user.first_name = sso_profile['first_name']
         user.last_name = sso_profile['last_name']
+        sso_gender = sso_profile['gender']
+        if eq(sso_gender, "M"):
+            user.gender = "M"
+        elif eq(sso_gender, "F"):
+            user.gender = "F"
+        elif eq(sso_gender, "H"):
+            user.gender = "B"
+        elif eq(sso_gender, "E"):
+            user.gender = "E"
         user.sid = sso_profile['sid']
         user.is_sso = True
         user.save()
 
-        return redirect(url_after_login + email)
+    next_path = '{0}{1}'.format(url_after_login, api_settings.JWT_ENCODE_HANDLER(
+        api_settings.JWT_PAYLOAD_HANDLER(
+            user,
+        )
+    ))
+
+    return redirect(next_path)
 
     return JsonResponse(status=200,
                         data={'error_title': "Login Error",
