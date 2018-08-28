@@ -149,7 +149,7 @@ def convert_noti_list_to_queryset(request, noti_list):
             ret_noti["updated_at"] = noti.updated_time
             ret.append(ret_noti)
         except ValueError:
-            logger.warning("user which email=(%s) has no profile image", noti.following.email)
+            logger.warning("noti_id=(%s) has no profile image", noti.id)
             continue
         except StopIteration:
             logger.warning("Unexpected Type of notification")
