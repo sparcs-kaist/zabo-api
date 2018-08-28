@@ -148,6 +148,8 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
     permission_classes = (IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly,)
+    queryset = Zabo.objects.filter(is_deleted=False)
+
 
     def list(self, request):
         serializer = CommentSerializer(self.queryset, many=True, context={'request': request})
@@ -174,6 +176,7 @@ class RecommentViewSet(viewsets.ModelViewSet):
     serializer_class = RecommentSerializer
     queryset = Recomment.objects.all()
     permission_classes = (IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly, )
+    queryset = Zabo.objects.filter(is_deleted=False)
 
     def list(self, request):
         serializer = self.get_serializer(self.queryset, many=True, context={'request': request})
