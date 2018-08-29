@@ -64,27 +64,26 @@ class ZaboUser(AbstractBaseUser, PermissionsMixin):
     point = 0
     point_updated_time = None
 
-def get_participating_zaboes(self):
-    pass
+    def get_participating_zaboes(self):
+        pass
 
 
-def follow_other(self, nickname):
-    following_user = get_object_or_404(ZaboUser, nickName=nickname)
-    self.following.add(following_user)
-    self.save()
+    def follow_other(self, nickname):
+        following_user = get_object_or_404(ZaboUser, nickName=nickname)
+        self.following.add(following_user)
+        self.save()
 
 
-def unfollow_other(self, nickname):
-    following_user = get_object_or_404(ZaboUser, nickName=nickname)
-    self.following.remove(following_user)
-    self.save()
+    def unfollow_other(self, nickname):
+        following_user = get_object_or_404(ZaboUser, nickName=nickname)
+        self.following.remove(following_user)
+        self.save()
+
+    def get_point(self):
+        self.point = sso_client.get_point(self.sid)
+        return self.point
 
 
-def get_point(self):
-    self.point = sso_client.get_point(self.sid)
-    return self.point
-
-
-def add_point(self, delta, message):
-    result = sso_client.modify_point(self.sid, delta, message, 0)
-    return result
+    def add_point(self, delta, message):
+        result = sso_client.modify_point(self.sid, delta, message, 0)
+        return result
