@@ -148,7 +148,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     queryset = Comment.objects.all()
     permission_classes = (IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly,)
-    queryset = Comment.objects.filter(is_deleted=False)
+    queryset = Comment.objects.all()
 
 
     def list(self, request):
@@ -165,18 +165,18 @@ class CommentViewSet(viewsets.ModelViewSet):
         )
         # Make notification to ZaboUser
         ReactionNotificatinoHelper(self.request.user).notify_to_User(zabo)
-
-    def destroy(self, request, pk=None):
-        instance = get_object_or_404(self.queryset, pk=pk)
-        setattr(instance, "is_deleted", True)
-        instance.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    #
+    # def destroy(self, request, pk=None):
+    #     instance = get_object_or_404(self.queryset, pk=pk)
+    #     setattr(instance, "is_deleted", True)
+    #     instance.save()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
 
 class RecommentViewSet(viewsets.ModelViewSet):
     serializer_class = RecommentSerializer
     queryset = Recomment.objects.all()
     permission_classes = (IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly, )
-    queryset = Recomment.objects.filter(is_deleted=False)
+    queryset = Recomment.objects.all()
 
     def list(self, request):
         serializer = self.get_serializer(self.queryset, many=True, context={'request': request})
@@ -192,11 +192,11 @@ class RecommentViewSet(viewsets.ModelViewSet):
         # Make notification to CommentUser
         ReactionNotificatinoHelper(self.request.user).notify_to_User(comment)
 
-    def destroy(self, request, pk=None):
-        instance = get_object_or_404(self.queryset, pk=pk)
-        setattr(instance, "is_deleted", True)
-        instance.save()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    # def destroy(self, request, pk=None):
+    #     instance = get_object_or_404(self.queryset, pk=pk)
+    #     setattr(instance, "is_deleted", True)
+    #     instance.save()
+    #     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class PosterViewSet(viewsets.ModelViewSet):
