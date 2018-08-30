@@ -1,6 +1,8 @@
 import uuid
 
 from django.db import models
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from apps.users.models import ZaboUser
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
@@ -127,6 +129,12 @@ class Recomment(TimeStampedModel, HavingAuthorModel):
     is_deleted = models.BooleanField(default=False)
     is_blocked = models.BooleanField(default=False)
 
+class CommentHistory(models.Model):
+    created_time = models.DateTimeField(auto_now_add=True)
+    content = models.CharField(max_length=140)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.PositiveIntegerField()
+    comment = GenericForeignKey('content_type', 'object_id')
 
 class Participate(models.Model):
     zabo = models.ForeignKey(

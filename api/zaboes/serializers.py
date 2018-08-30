@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from api.users.serializers import ZabouserListSerializer
-from apps.zaboes.models import Zabo, ZaboHistory, Timeslot, Comment, Recomment, Participate, Poster, Like
+from apps.zaboes.models import Zabo, ZaboHistory, Timeslot, Comment, Recomment, CommentHistory, Participate, Poster, Like
 from django.conf import settings
 
 import json
@@ -53,6 +53,23 @@ class RecommentSerializer(serializers.ModelSerializer):
             'updated_time',
         )
 
+    def create(self, validated_data):
+        comment_content = validated_data.get('content', '')
+        recomment = Recomment.objects.create(**validated_data)
+        CommentHistory.objects.create(comment=recomment, content=comment_content)
+        return recomment
+    
+    def update(self, instance, validated_data):
+        instance.is_private = validated_data.get('is_private', instance.is_private)
+        instance.is_deleted = validated_data.get('is_deleted', instance.is_deleted)
+        instance.is_blocked = validated_data.get('is_blocked', instance.is_blocked)
+        comment_content = validated_data.get('content', instance.content)
+        if comment_content != instance.content:
+            comment_history = CommentHistory.objects.create(comment=instance, content=comment_content)
+        instance.content = comment_content
+        instance.save()
+        return instance
+
 
 class CommentSerializer(serializers.ModelSerializer):
     author = ZabouserListSerializer(read_only=True)
@@ -75,6 +92,23 @@ class CommentSerializer(serializers.ModelSerializer):
             'created_time',
             'updated_time',
         )
+    
+    def create(self, validated_data):
+        comment_content = validated_data.get('content', '')
+        comment = Comment.objects.create(**validated_data)
+        CommentHistory.objects.create(comment=comment, content=comment_content)
+        return comment
+    
+    def update(self, instance, validated_data):
+        instance.is_private = validated_data.get('is_private', instance.is_private)
+        instance.is_deleted = validated_data.get('is_deleted', instance.is_deleted)
+        instance.is_blocked = validated_data.get('is_blocked', instance.is_blocked)
+        comment_content = validated_data.get('content', instance.content)
+        if comment_content != instance.content:
+            comment_history = CommentHistory.objects.create(comment=instance, content=comment_content)
+        instance.content = comment_content
+        instance.save()
+        return instance
 
 
 class ZaboSerializer(serializers.ModelSerializer):
