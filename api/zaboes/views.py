@@ -37,7 +37,7 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         'create': ZaboCreateSerializer,
         'list': ZaboListSerializer,
         'retrieve': ZaboSerializer,
-        "update": ZaboCreateSerializer
+        'update': ZaboCreateSerializer
     }
 
     permission_classes = (IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly, )

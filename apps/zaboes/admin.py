@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.zaboes.models import Zabo, Comment, Poster, Recomment, Timeslot, Participate, Like
+from apps.zaboes.models import Zabo, ZaboHistory, Comment, Poster, Recomment, Timeslot, Participate, Like
 
 
 # Register your models here.
@@ -35,6 +35,7 @@ class LikeAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Zabo, ZaboAdmin)
+admin.site.register(ZaboHistory)
 admin.site.register(Comment)
 admin.site.register(Poster, PosterAdmin)
 admin.site.register(Recomment)

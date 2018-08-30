@@ -68,6 +68,15 @@ class Zabo(TimeStampedModel, HavingAuthorModel):
             return False
 
 
+class ZaboHistory(models.Model):
+    zabo = models.ForeignKey(
+        Zabo,
+        related_name='history',
+        on_delete=models.CASCADE
+    )
+    created_date = models.DateTimeField(auto_now_add=True)
+    content = models.TextField()
+
 class Poster(models.Model):
     zabo = models.ForeignKey(
         Zabo,
