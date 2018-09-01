@@ -109,7 +109,7 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
 
     @action(methods=['get'], detail=False)
     def popular(self, request):
-        queryset = Zabo.objects.all()
+        queryset = self.filter_queryset(self.get_queryset())
         queryset = sorted(queryset, key=lambda zabo: (-zabo.like_count))
         page = self.paginate_queryset(queryset)
         serializer = ZaboListSerializer(page, many=True, context={
@@ -121,7 +121,7 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
 
     @action(methods=['get'], detail=False)
     def soon(self, request):
-        queryset = Zabo.objects.all()
+        queryset = self.filter_queryset(self.get_queryset())
         queryset = (zabo for zabo in queryset if not zabo.is_finished)
         queryset = sorted(queryset, key=lambda zabo: (zabo.time_left))
         page = self.paginate_queryset(queryset)
