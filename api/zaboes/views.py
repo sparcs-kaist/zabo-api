@@ -37,7 +37,7 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         'create': ZaboCreateSerializer,
         'list': ZaboListSerializer,
         'retrieve': ZaboSerializer,
-        "update": ZaboCreateSerializer
+        'update': ZaboCreateSerializer
     }
 
     permission_classes = (IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly, )
@@ -163,8 +163,10 @@ class CommentViewSet(viewsets.ModelViewSet):
             author=self.request.user,
             zabo=zabo
         )
+        # CommentHistory.objects.create(content_object=comment, content=comment_content)
         # Make notification to ZaboUser
         ReactionNotificatinoHelper(self.request.user).notify_to_User(zabo)
+    
     #
     # def destroy(self, request, pk=None):
     #     instance = get_object_or_404(self.queryset, pk=pk)

@@ -3,7 +3,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from api.users.serializers import ZabouserListSerializer
-from apps.zaboes.models import Zabo, Timeslot, Comment, Recomment, Participate, Poster, Like
+from apps.zaboes.models import Zabo, ZaboHistory, Timeslot, Comment, Recomment, CommentHistory, Participate, Poster, Like
 from django.conf import settings
 
 import json
@@ -53,6 +53,23 @@ class RecommentSerializer(serializers.ModelSerializer):
             'updated_time',
         )
 
+    def create(self, validated_data):
+        comment_content = validated_data.get('content', '')
+        recomment = Recomment.objects.create(**validated_data)
+        CommentHistory.objects.create(comment=recomment, content=comment_content)
+        return recomment
+    
+    def update(self, instance, validated_data):
+        instance.is_private = validated_data.get('is_private', instance.is_private)
+        instance.is_deleted = validated_data.get('is_deleted', instance.is_deleted)
+        instance.is_blocked = validated_data.get('is_blocked', instance.is_blocked)
+        comment_content = validated_data.get('content', instance.content)
+        if comment_content != instance.content:
+            comment_history = CommentHistory.objects.create(comment=instance, content=comment_content)
+        instance.content = comment_content
+        instance.save()
+        return instance
+
 
 class CommentSerializer(serializers.ModelSerializer):
     author = ZabouserListSerializer(read_only=True)
@@ -75,6 +92,23 @@ class CommentSerializer(serializers.ModelSerializer):
             'created_time',
             'updated_time',
         )
+    
+    def create(self, validated_data):
+        comment_content = validated_data.get('content', '')
+        comment = Comment.objects.create(**validated_data)
+        CommentHistory.objects.create(comment=comment, content=comment_content)
+        return comment
+    
+    def update(self, instance, validated_data):
+        instance.is_private = validated_data.get('is_private', instance.is_private)
+        instance.is_deleted = validated_data.get('is_deleted', instance.is_deleted)
+        instance.is_blocked = validated_data.get('is_blocked', instance.is_blocked)
+        comment_content = validated_data.get('content', instance.content)
+        if comment_content != instance.content:
+            comment_history = CommentHistory.objects.create(comment=instance, content=comment_content)
+        instance.content = comment_content
+        instance.save()
+        return instance
 
 
 class ZaboSerializer(serializers.ModelSerializer):
@@ -174,7 +208,9 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
 
         timeslots_data = validated_data.pop('timeslots', None)
+        content_data = validated_data.get('content', '')
         zabo = Zabo.objects.create(**validated_data)
+        history = ZaboHistory.objects.create(zabo=zabo, content=content_data)
         if timeslots_data:
             for timeslot_data in timeslots_data:
                 Timeslot.objects.create(zabo=zabo, **timeslot_data)
@@ -185,11 +221,16 @@ class ZaboCreateSerializer(serializers.ModelSerializer):
         timeslots_data = validated_data.pop('timeslots', None)
         instance.title = validated_data.get('title', instance.title)
         instance.location = validated_data.get('location', instance.location)
-        instance.content = validated_data.get('content', instance.content)
         instance.category = validated_data.get('category', instance.category)
         instance.apply = validated_data.get('apply', instance.apply)
         instance.payment = validated_data.get('payment', instance.payment)
         instance.deadline = validated_data.get('deadline', instance.deadline)
+
+        new_content = validated_data.get('content', instance.content)
+        if new_content != instance.content:
+            ZaboHistory.objects.create(zabo=instance, content=new_content)
+        instance.content = new_content
+
         instance.save()
 
         existing_time_slots = Timeslot.objects.filter(zabo=instance)
