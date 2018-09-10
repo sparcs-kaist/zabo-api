@@ -5,7 +5,7 @@ from apps.mails.models import ZaboMail
 from apps.mails.helpers import MailHelpers
 from api.mails.serializers import PaperMailCreateSerializer
 from api.common.viewset import ActionAPIViewSet
-from zabo.common.permissions import IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly
+from zabo.common.permissions import ZaboMailPermission
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status
@@ -22,7 +22,7 @@ class ZaboMailViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
     search_fields = ('sender_address', 'message',)
     # 나중에 검색 결과 순서에 대해 이야기 해보아야 함
     ordering_fields = ('created_time',)
-    permission_classes = (IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly,)
+    permission_classes = (ZaboMailPermission,)
 
     def perform_create(self, serializer):
         paperMail = serializer.save()
