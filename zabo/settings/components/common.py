@@ -14,6 +14,7 @@ INSTALLED_APPS = [
     'apps.users',
     'apps.zaboes',
     'apps.common',
+    'apps.mails',
     'apps.notifications',
     'imagekit',
     'rest_framework_swagger',
