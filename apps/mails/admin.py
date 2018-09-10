@@ -3,5 +3,3 @@ from .models import ZaboMail
 
 # Register your models here.
 admin.site.register(ZaboMail)
-
-# Register your models here.
