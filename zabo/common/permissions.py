@@ -68,7 +68,7 @@ class IsAuthenticated(permissions.IsAuthenticated):
 
 class ZaboMailPermission(permissions.BasePermission):
     def has_permission(self, request, view):
-        if request.methor != 'POST': ## only support for report & report should be executed by post method
+        if request.method != 'POST': ## only support for report & report should be executed by post method
             return False
         return True
 
