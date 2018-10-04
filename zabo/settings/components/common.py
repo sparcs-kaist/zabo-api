@@ -18,10 +18,12 @@ INSTALLED_APPS = [
     'imagekit',
     'rest_framework_swagger',
     'corsheaders',  # django-cors-headers
+    'silk',
 ]
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',  # <- 다른 것들보다 앞에 위치시켜주세요., django-cors-headers
+    'silk.middleware.SilkyMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
