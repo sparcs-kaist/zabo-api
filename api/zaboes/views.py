@@ -42,6 +42,15 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
 
     permission_classes = (IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly, )
 
+    def paginate_queryset(self, queryset): # optimizing queryset for list action
+        queryset = queryset.select_related(
+            'author'
+        ).prefetch_related(
+            'posters',
+            'likes'
+        )
+        return super().paginate_queryset(queryset)
+
 
 
     def list(self, request):
