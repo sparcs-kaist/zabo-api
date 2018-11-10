@@ -52,6 +52,31 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         return super().paginate_queryset(queryset)
 
 
+    def filter_queryset(self, queryset):
+        queryset = super().filter_queryset(queryset)
+
+
+        if self.action != 'list':
+            queryset = queryset.select_related(
+                'author'
+            ).prefetch_related(
+                # models.Prefetch('comments',
+                #                 queryset=Comment.objects.order_by('created_time').select_related(
+                #                     'author'
+                #                 ).prefetch_related(
+                #                     models.Prefetch('recomments',
+                #                                     queryset=Recomment.objects.order_by('created_time').select_related('author'))
+                #                 )
+                #         ),
+
+
+                'timeslots',
+                'posters',
+                'likes',
+                )
+
+
+        return queryset
 
     def list(self, request):
         queryset = self.filter_queryset(self.get_queryset())
