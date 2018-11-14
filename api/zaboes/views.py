@@ -60,14 +60,14 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
             queryset = queryset.select_related(
                 'author'
             ).prefetch_related(
-                # models.Prefetch('comments',
-                #                 queryset=Comment.objects.order_by('created_time').select_related(
-                #                     'author'
-                #                 ).prefetch_related(
-                #                     models.Prefetch('recomments',
-                #                                     queryset=Recomment.objects.order_by('created_time').select_related('author'))
-                #                 )
-                #         ),
+                models.Prefetch('comments',
+                                queryset=Comment.objects.order_by('created_time').select_related(
+                                    'author'
+                                ).prefetch_related(
+                                    models.Prefetch('recomments',
+                                                    queryset=Recomment.objects.order_by('created_time').select_related('author'))
+                                )
+                        ),
 
 
                 'timeslots',
@@ -110,7 +110,7 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
             instance.save()
 
     def retrieve(self, request, pk=None):
-        zabo = get_object_or_404(self.queryset, pk=pk)
+        zabo = self.get_object()
         if (zabo.is_deleted):
             return Response(status=status.HTTP_204_NO_CONTENT)
         serializer = self.get_serializer(zabo)
