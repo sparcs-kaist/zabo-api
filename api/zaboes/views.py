@@ -82,7 +82,6 @@ class ZaboViewSet(viewsets.ModelViewSet, ActionAPIViewSet):
         queryset = self.filter_queryset(self.get_queryset())
         page = self.paginate_queryset(queryset)
         serializer = self.get_serializer(page, many=True)
-
         if page is not None:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
@@ -185,11 +184,17 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = (IsOwnerOrIsAuthenticatdThenCreateOnlyOrReadOnly,)
     queryset = Comment.objects.all()
 
-
-    def list(self, request):
-        serializer = CommentSerializer(self.queryset, many=True, context={'request': request})
-        return Response(serializer.data)
-
+    def paginate_queryset(self, queryset):  # optimizing queryset for list action
+        queryset = queryset.select_related(
+            'author'
+        ).prefetch_related(
+            models.Prefetch('recomments',
+                                queryset=Recomment.objects.select_related(
+                                    'author'
+                                )
+                            )
+        )
+        return super().paginate_queryset(queryset)
 
     def perform_create(self, serializer):
         zabo_id = int(self.request.data["zabo"])
