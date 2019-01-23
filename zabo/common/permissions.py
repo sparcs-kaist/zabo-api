@@ -65,3 +65,13 @@ class IsAuthenticated(permissions.IsAuthenticated):
         if request.method == 'OPTIONS':
             return True
         return super(IsAuthenticated, self).has_permission(request, view)
+
+class AdminUserPermission(permissions.BasePermission):
+    """
+    Custom permission to only allow owners of an object to edit it.
+    """
+
+    message = "You are not admin. It's not permissioned"
+
+    def has_permission(self, request, view, obj):
+        return request.user.is_superuser
