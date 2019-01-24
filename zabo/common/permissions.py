@@ -46,7 +46,7 @@ class ZaboUserPermission(permissions.BasePermission):
 
     message = "It's not permissioned"
 
-    def has_object_permission(self, request, view, obj):
+    def has_object_permission(self, request, view):
         # Read permissions are allowed to any request,
         # so we'll always allow GET, HEAD or OPTIONS requests.
         UPDATE_METHODS = ('PUT', 'PATCH')

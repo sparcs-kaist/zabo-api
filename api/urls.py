@@ -12,7 +12,7 @@ urlpatterns = (
     url(r'^api/', include(zabo_router.urls)),
     url(r'^api/', include(zabouser_router.urls)),
     url(r'^api/', include(noti_router.urls)),
-
+    url(r'^api/', include('api.admin.urls')),
     url(r'^api/login/$', views.login),
     url(r'^api/login/callback/$', views.login_callback),
     url(r'^api/logout/$', views.logout),
