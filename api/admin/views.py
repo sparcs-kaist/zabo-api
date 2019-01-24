@@ -13,15 +13,24 @@ class AdminViewSet(viewsets.ModelViewSet):
 
     @action(methods=["patch"], detail=False)
     def validate_user(self, request):
-        nickName = request.data["nickName"]
-        target_user = get_object_or_404(self.queryset, nickName=nickName)
+        email = request.data["email"]
+        target_user = get_object_or_404(self.queryset, email=email)
+        if target_user.is_sso:
+            return Response("This API does not work for sso members")
         target_user.is_active = True
         target_user.save()
         return Response("Sucessfully verified")
 
     @action(methods=["patch"], detail=False)
-    def change_password(self, reqeust):
-        return Response("It worked 2")
+    def change_password(self, request):
+        email = request.data["email"]
+        new_password = request.data["password"]
+        target_user = get_object_or_404(self.queryset, email=email)
+        if target_user.is_sso:
+            return Response("This API does not work for sso members")
+        target_user.set_password(new_password)
+        target_user.save()
+        return Response("Sucessfully chaged")
 
 
 
