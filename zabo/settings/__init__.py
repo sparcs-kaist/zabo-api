@@ -12,6 +12,7 @@ base_settings = [
     'components/model.py',
     'components/rest_framework.py',
     'components/static.py',
+    'components/mail.py',
     'environments/%s.py' % ENV,
 ]
 
