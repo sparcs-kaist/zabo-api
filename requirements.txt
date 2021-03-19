@@ -26,7 +26,7 @@ greenlet==0.4.14
 idna==2.6
 itsdangerous==0.24
 itypes==1.1.0
-Jinja2==2.10
+Jinja2==2.11.3
 locustio==0.8.1
 MarkupSafe==1.0
 more-itertools==4.2.0
