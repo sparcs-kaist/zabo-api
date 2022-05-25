@@ -38,7 +38,7 @@ Pillow==5.1.0
 pluggy==0.6.0
 py==1.5.4
 pycparser==2.18
-PyJWT==1.5.3
+PyJWT==2.4.0
 pytest==3.6.3
 pytest-django==3.3.2
 pytz==2018.3
